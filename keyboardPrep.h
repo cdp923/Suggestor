@@ -8,4 +8,7 @@ extern std::vector<std::vector<std::wstring>> dictGraph;
 
 std::vector<std::vector<char>> initKeyboard();
 std::vector<std::vector<std::wstring>> initDictionary();
-std::vector<std::vector<std::wstring>> quickSort(std::vector<std::vector<std::wstring>> unsortedDictGraph);
+std::vector<std::wstring> autoComplete(std::wstring input);
+int indexOfFirstChar(std::wstring input);
+bool containSymbols(std::wstring input);
+std::vector<std::wstring> resizeVector(std::vector<std::wstring> suggestions);

@@ -59,19 +59,73 @@ std::vector<std::vector<std::wstring>> initDictionary(){
             counter++;
             firstLetter++;
         }
+        int stringIndex = 0;
+        while (stringIndex<word.size()){
+            word[stringIndex] = std::tolower(word[stringIndex]);
+            stringIndex++;
+        }
         std::wstring wideWord(word.begin(), word.end());
         dictGraph[counter].push_back(wideWord);
+        //printf("%ls, ", wideWord.c_str());
     }
+    file.close();
     for(int i = 0; i<dictGraph.size(); i++){
         std::sort(dictGraph[i].begin(), dictGraph[i].end());
     }
-    //printf("%d",dictGraph.size());
-    printf("%d\n",max);
-    file.close();
     return dictGraph;
 }
+int indexOfFirstChar(std::wstring input){
+    return (int)input[0]-97;
+}
+bool containSymbols(std::wstring input){
+    int stringIndex =0;
+    while (stringIndex<input.size()){
+        if ((int)input[stringIndex]>122 || (int)input[stringIndex]<97){
+            return true;
 
+        }
+        stringIndex++;
+    }
+    return false;
+}
+
+std::vector<std::wstring> autoComplete(std::wstring input){
+    std::vector<std::wstring> suggestionVector(5);
+    int stringIndex =0;
+    while (stringIndex<input.size()){
+        input[stringIndex] = std::tolower(input[stringIndex]);
+        stringIndex++;
+    }
+    if (input.size() <= 1 || containSymbols(input)){
+        printf("return empty vector. input.size() <= 1 || containSymbols(input)");
+        suggestionVector.resize(0);
+        return suggestionVector;
+    }
+    int index = indexOfFirstChar(input);
+    int suggestionsAdded =0;
+    for(int count=0; count<dictGraph[index].size();count++){
+        //printf("%ls, ", dictGraph[index][count].c_str());
+        if (input.size()<=dictGraph[index][count].size()){
+            if (input == dictGraph[index][count].substr(0, input.size())){
+                if (suggestionsAdded <suggestionVector.size()){
+                    suggestionVector[suggestionsAdded] = dictGraph[index][count];
+                    suggestionsAdded++;
+                }else{
+                    break;
+                }
+            }
+        }
+    }
+    suggestionVector.resize(suggestionsAdded);
+    int i =0;
+    while (i<suggestionVector.size()){
+        printf("%ls, ", suggestionVector[i].c_str());
+        i++;
+    }
+    return suggestionVector;
+}
 int main(){
     dictGraph = initDictionary();
+    autoComplete(L"y");
     return 0;
 }
