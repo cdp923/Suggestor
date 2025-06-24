@@ -1,15 +1,15 @@
 #include "keyboardPrep.h"
+#include "mergeSort.h" //runtime is to long. used.sort instead
 
 #include <cstdio>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include <locale>
-#include <codecvt>
+#include <algorithm>
 
 int keyNumber = 26; 
 std::vector<std::vector<char>> keyGraph;
-std::vector<std::vector<std::wstring>> dictGraph(26);
+std::vector<std::vector<std::wstring>> dictGraph(keyNumber);
 std::vector<std::vector<char>> initKeyboard(){
     std::vector<std::vector<char>> keyGraphInitilizer;
     std::vector<char> q = {'a','w'};
@@ -48,6 +48,7 @@ std::vector<std::vector<std::wstring>> initDictionary(){
     }
     std::string word;
     int counter = 0;
+    int max = 0; 
     char firstLetter = 'a';
     while (std::getline(file, word))
     {
@@ -57,19 +58,19 @@ std::vector<std::vector<std::wstring>> initDictionary(){
         if (word.at(0) != firstLetter){
             counter++;
             firstLetter++;
-            printf("\n");
         }
         std::wstring wideWord(word.begin(), word.end());
         dictGraph[counter].push_back(wideWord);
-        printf("%ls,", wideWord.c_str());
-    }  
+    }
+    for(int i = 0; i<dictGraph.size(); i++){
+        std::sort(dictGraph[i].begin(), dictGraph[i].end());
+    }
+    //printf("%d",dictGraph.size());
+    printf("%d\n",max);
+    file.close();
     return dictGraph;
 }
-/*
-std::vector<std::vector<std::wstring>> quickSort(std::vector<std::vector<std::wstring>> unsortedDictGraph){
-    
-}
-*/
+
 int main(){
     dictGraph = initDictionary();
     return 0;
