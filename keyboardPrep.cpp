@@ -4,9 +4,12 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include <locale>
+#include <codecvt>
+
 int keyNumber = 26; 
 std::vector<std::vector<char>> keyGraph;
-std::vector<std::vector<std::string>> dictGraph(26);
+std::vector<std::vector<std::wstring>> dictGraph(26);
 std::vector<std::vector<char>> initKeyboard(){
     std::vector<std::vector<char>> keyGraphInitilizer;
     std::vector<char> q = {'a','w'};
@@ -38,7 +41,7 @@ std::vector<std::vector<char>> initKeyboard(){
     keyGraphInitilizer = {q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m};
     return keyGraphInitilizer;
 } 
-std::vector<std::vector<std::string>> initDictionary(){
+std::vector<std::vector<std::wstring>> initDictionary(){
     std::ifstream file("Dictionary.txt");
     if (!file.is_open()) {
         std::cerr << "Error: Could not open file." << std::endl;
@@ -48,17 +51,26 @@ std::vector<std::vector<std::string>> initDictionary(){
     char firstLetter = 'a';
     while (std::getline(file, word))
     {
+        if(word.empty()){
+            continue;
+        }
         if (word.at(0) != firstLetter){
             counter++;
             firstLetter++;
             printf("\n");
         }
-        dictGraph[counter].push_back(word);
-        printf("%s,", word.c_str());
+        std::wstring wideWord(word.begin(), word.end());
+        dictGraph[counter].push_back(wideWord);
+        printf("%ls,", wideWord.c_str());
     }  
     return dictGraph;
 }
+/*
+std::vector<std::vector<std::wstring>> quickSort(std::vector<std::vector<std::wstring>> unsortedDictGraph){
+    
+}
+*/
 int main(){
-    initDictionary();
+    dictGraph = initDictionary();
     return 0;
 }
