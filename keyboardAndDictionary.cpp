@@ -1,4 +1,5 @@
-#include "keyboardPrep.h"
+#include "keyboardAndDictionary.h"
+#include "autocomplete.h"
 #include "mergeSort.h" //runtime is to long. used.sort instead
 
 #include <cstdio>
@@ -10,6 +11,7 @@
 int keyNumber = 26; 
 std::vector<std::vector<char>> keyGraph;
 std::vector<std::vector<std::wstring>> dictGraph(keyNumber);
+
 std::vector<std::vector<char>> initKeyboard(){
     std::vector<std::vector<char>> keyGraphInitilizer;
     std::vector<char> q = {'a','w'};
@@ -74,58 +76,17 @@ std::vector<std::vector<std::wstring>> initDictionary(){
     }
     return dictGraph;
 }
-int indexOfFirstChar(std::wstring input){
-    return (int)input[0]-97;
-}
-bool containSymbols(std::wstring input){
-    int stringIndex =0;
-    while (stringIndex<input.size()){
-        if ((int)input[stringIndex]>122 || (int)input[stringIndex]<97){
-            return true;
 
-        }
-        stringIndex++;
-    }
-    return false;
-}
-
-std::vector<std::wstring> autoComplete(std::wstring input){
-    std::vector<std::wstring> suggestionVector(5);
-    int stringIndex =0;
-    while (stringIndex<input.size()){
-        input[stringIndex] = std::tolower(input[stringIndex]);
-        stringIndex++;
-    }
-    if (input.size() <= 1 || containSymbols(input)){
-        printf("return empty vector. input.size() <= 1 || containSymbols(input)");
-        suggestionVector.resize(0);
-        return suggestionVector;
-    }
-    int index = indexOfFirstChar(input);
-    int suggestionsAdded =0;
-    for(int count=0; count<dictGraph[index].size();count++){
-        //printf("%ls, ", dictGraph[index][count].c_str());
-        if (input.size()<=dictGraph[index][count].size()){
-            if (input == dictGraph[index][count].substr(0, input.size())){
-                if (suggestionsAdded <suggestionVector.size()){
-                    suggestionVector[suggestionsAdded] = dictGraph[index][count];
-                    suggestionsAdded++;
-                }else{
-                    break;
-                }
-            }
-        }
-    }
-    suggestionVector.resize(suggestionsAdded);
-    int i =0;
-    while (i<suggestionVector.size()){
-        printf("%ls, ", suggestionVector[i].c_str());
-        i++;
-    }
-    return suggestionVector;
-}
 int main(){
     dictGraph = initDictionary();
-    autoComplete(L"y");
+
+    std::vector<std::wstring> wordCompletion = autoComplete(L"wi", dictGraph);
     return 0;
 }
+/*
+cd ..
+cd..
+g++ autocomplete.cpp keyboardAndDictionary.cpp mergeSort.cpp -o keyboardAndDictionary.exe
+keyboardAndDictionary.exe
+*/
+
