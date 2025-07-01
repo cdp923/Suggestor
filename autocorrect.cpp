@@ -59,7 +59,7 @@ int distBFS(char typedLetter, char dictionaryLetter){
             if (visited[currentConnection] == -1){
                 visited[currentConnection]=0;
                 pathNumber[currentConnection] = pathNumber[current]+1;
-                distance[currentConnection] = distance[current]+1;
+                distance[currentConnection] = distance[current]+1; //possibly break if distance[currentConnection] >2
                 if(dictionaryLetter == keyGraph[current][i]){
                     return distance[currentConnection];
                 }
@@ -69,10 +69,20 @@ int distBFS(char typedLetter, char dictionaryLetter){
     }
     return distance[position];
 }
-std::vector<std::wstring> bruteForceSearch(std::wstring word, std::vector<std::vector<std::wstring>>dictGraph){
-    std::vector<std::wstring> closestResponses(3);
-    std::vector<int> closestResponsesDist(3);
+std::vector<std::wstring> autoCorrect(std::wstring word, std::vector<std::vector<std::wstring>>dictGraph){
+    int stringIndex =0;
+    while (stringIndex<word.size()){
+        word[stringIndex] = std::tolower(word[stringIndex]);
+        stringIndex++;
+    }
+    std::vector<std::wstring> closestResponses;
+    std::vector<int> closestResponsesDist;
     int index = indexOfFirstChar(word);
+    std::vector<std::wstring>letterVector = dictGraph[index];
+    if(binarySearch(letterVector, 0, letterVector.size(), word)){
+        return;
+    }
+
     int responsesSaved = 0;
     int largestMinDist = 1000;
     int current;
@@ -82,30 +92,41 @@ std::vector<std::wstring> bruteForceSearch(std::wstring word, std::vector<std::v
             current+=distBFS(word[x], dictGraph[index][i][x]);
         }
         if(largestMinDist > current){
-            if(closestResponses.size()>=3){
-                closestResponses[0] = dictGraph[index][i];
-                closestResponsesDist[0] = current;
-            }else{
+            if(closestResponses.empty()){
                 closestResponses.push_back(dictGraph[index][i]);
                 closestResponsesDist.push_back(current);
+            }else if(closestResponses.size()<=3){
+                closestResponses[0] = dictGraph[index][i];
+                closestResponsesDist[0] = current;
+                int insertionPoint;
+                for(insertionPoint=0;insertionPoint<closestResponses.size();insertionPoint++){
+                    if(current<=closestResponsesDist[insertionPoint]){
+                        closestResponses[insertionPoint] = dictGraph[index][i];
+                        closestResponsesDist[insertionPoint] = current;
+                    }
+                }
+
             }
-        int tempDist;
-        std::wstring tempWord;
-        int leftIndex;
-        for(int i = 0; i < closestResponsesDist.size(); i++){
-            tempDist = closestResponsesDist[i];
-            tempWord = closestResponses[i];
-            leftIndex = i-1;
-            while(leftIndex>=0 &&closestResponsesDist[leftIndex]<tempDist){
-                closestResponsesDist[leftIndex+1]=closestResponsesDist[leftIndex];
-                closestResponses[leftIndex+1]=closestResponses[leftIndex];
-                leftIndex--;
-            }
-            closestResponsesDist[leftIndex + 1] = tempDist;
-            closestResponses[leftIndex + 1] = tempWord;
         }
+            /* Dont have to sort if already sorted
+            int tempDist;
+            std::wstring tempWord;
+            int leftIndex;
+            for(int i = 0; i < closestResponsesDist.size(); i++){ //sort
+                tempDist = closestResponsesDist[i];
+                tempWord = closestResponses[i];
+                leftIndex = i-1;
+                while(leftIndex>=0 &&closestResponsesDist[leftIndex]<tempDist){
+                    closestResponsesDist[leftIndex+1]=closestResponsesDist[leftIndex];
+                    closestResponses[leftIndex+1]=closestResponses[leftIndex];
+                    leftIndex--;
+                }
+                closestResponsesDist[leftIndex + 1] = tempDist;
+                closestResponses[leftIndex + 1] = tempWord;
+            }
         largestMinDist = closestResponsesDist[0];
         }
+        */
         /*
         int temp;
         int left;
@@ -122,5 +143,9 @@ std::vector<std::wstring> bruteForceSearch(std::wstring word, std::vector<std::v
         largestMinDist = closestResponsesDist[0];
         */
     }
+    for(int i=0;i<closestResponses.size();i++){
+        printf("%ls\n",closestResponses[i].c_str());
+    }
+    printf("\n");
     return closestResponses;
 }

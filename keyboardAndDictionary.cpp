@@ -1,6 +1,7 @@
 #include "keyboardAndDictionary.h"
 #include "autocomplete.h"
 #include "mergeSort.h" //runtime is to long. used.sort instead
+#include "autocorrect.h"
 
 #include <cstdio>
 #include <stdio.h>
@@ -98,13 +99,22 @@ int main(){
     dictGraph = initDictionary();
 
     std::vector<std::wstring> wordCompletion = autoComplete(L"wi", dictGraph);
+    std::wstring word = L"acre";
+    std::vector<std::wstring> wordCorrection = autoCorrect(word, dictGraph);
+    word = L"acrw";
+    wordCorrection = autoCorrect(word, dictGraph);
+    word = L"acrq";
+    wordCorrection = autoCorrect(word, dictGraph);
+    word = L"acry";
+    wordCorrection = autoCorrect(word, dictGraph);
+
     return 0;
 }
 /*
 cd ..
 cd..
 cd projects\textEditorAutoCorrectComplete
-g++ autocomplete.cpp keyboardAndDictionary.cpp mergeSort.cpp -o keyboardAndDictionary.exe
+g++ autocomplete.cpp keyboardAndDictionary.cpp mergeSort.cpp reverseInsertionSort.cpp autocomplete.cpp -o keyboardAndDictionary.exe
 keyboardAndDictionary.exe
 */
 
