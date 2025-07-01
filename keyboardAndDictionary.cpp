@@ -76,6 +76,23 @@ std::vector<std::vector<std::wstring>> initDictionary(){
     }
     return dictGraph;
 }
+int indexOfFirstChar(std::wstring input){
+    return (int)input[0]-97;
+}
+int indexOfChar(char input){
+    return input-97;
+}
+bool containSymbols(std::wstring input){
+    int stringIndex =0;
+    while (stringIndex<input.size()){
+        if ((int)input[stringIndex]>122 || (int)input[stringIndex]<97){
+            return true;
+
+        }
+        stringIndex++;
+    }
+    return false;
+}
 
 int main(){
     dictGraph = initDictionary();
@@ -86,6 +103,7 @@ int main(){
 /*
 cd ..
 cd..
+cd projects\textEditorAutoCorrectComplete
 g++ autocomplete.cpp keyboardAndDictionary.cpp mergeSort.cpp -o keyboardAndDictionary.exe
 keyboardAndDictionary.exe
 */

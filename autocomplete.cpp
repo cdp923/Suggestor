@@ -4,20 +4,6 @@
 #include <iostream>
 #include <algorithm>
 
-int indexOfFirstChar(std::wstring input){
-    return (int)input[0]-97;
-}
-bool containSymbols(std::wstring input){
-    int stringIndex =0;
-    while (stringIndex<input.size()){
-        if ((int)input[stringIndex]>122 || (int)input[stringIndex]<97){
-            return true;
-
-        }
-        stringIndex++;
-    }
-    return false;
-}
 
 std::vector<std::wstring> autoComplete(std::wstring input, std::vector<std::vector<std::wstring>>dictionary){
     std::vector<std::wstring> suggestionVector(5);
