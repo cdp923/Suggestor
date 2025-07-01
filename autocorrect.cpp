@@ -3,18 +3,19 @@
 #include "reverseInsertionSort.h"
 #include <queue>
 
-
+#define MAXSUGGESTIONS 3
 bool binarySearch(std::vector<std::wstring>letterVector,int left, int right, std::wstring word){
-    printf("In BinarySearch. Word: %ls, Current: %ls",word.c_str(), letterVector[(left+right)/2].c_str() );
     if(letterVector.empty()||word.empty()){
-            return false;
+        printf("returning false");
+        return false;
     }
     int stringIndex =0;
-    int middle = (left+right)/2;
+    int middle = left+(right-left)/2;
     std::wstring current = letterVector[middle];
+    printf("In BinarySearch. Word: %ls, Current: %ls",word.c_str(), letterVector[middle].c_str() );
     if (left<=right){
         if (current == word){
-            printf("\n\nTrue! Word: %ls, Current: %ls",word.c_str(), letterVector[(left+right)/2].c_str() );
+            printf("\n\nTrue! Word: %ls, Current: %ls\n\n",word.c_str(), letterVector[middle].c_str() );
             return true;
         }
         if (current > word ){
@@ -23,6 +24,7 @@ bool binarySearch(std::vector<std::wstring>letterVector,int left, int right, std
         return binarySearch(letterVector,middle+1 ,right, word);
         
     }
+    printf("returning false");
     return false;
 }
 int distBFS(char typedLetter, char dictionaryLetter){
@@ -72,8 +74,11 @@ std::vector<std::wstring> autoCorrect(std::wstring word, std::vector<std::vector
     std::vector<int> closestResponsesDist;
     int index = indexOfFirstChar(word);
     std::vector<std::wstring>letterVector = dictGraph[index];
-    if(binarySearch(letterVector, 0, letterVector.size(), word)){
-        printf("BinarySearch return true");
+    if(binarySearch(letterVector, 0, letterVector.size(), word)==true){
+        closestResponses.push_back(word);
+        for(int i=0;i<closestResponses.size();i++){
+            printf("%ls\n",closestResponses[i].c_str());
+        }
         return closestResponses;
     }
 
@@ -86,20 +91,25 @@ std::vector<std::wstring> autoCorrect(std::wstring word, std::vector<std::vector
             current+=distBFS(word[x], dictGraph[index][i][x]);
         }
         if(largestMinDist > current){
-            if(closestResponses.empty()){
-                closestResponses.push_back(dictGraph[index][i]);
-                closestResponsesDist.push_back(current);
-            }else if(closestResponses.size()<=3){
-                closestResponses[0] = dictGraph[index][i];
-                closestResponsesDist[0] = current;
-                int insertionPoint;
-                for(insertionPoint=0;insertionPoint<closestResponses.size();insertionPoint++){
-                    if(current<=closestResponsesDist[insertionPoint]){
-                        closestResponses[insertionPoint] = dictGraph[index][i];
-                        closestResponsesDist[insertionPoint] = current;
-                    }
+            if(closestResponses.size()<MAXSUGGESTIONS){
+                int insertionPoint = 0;
+                while (insertionPoint < closestResponses.size() && 
+                    closestResponsesDist[insertionPoint] <= current) {
+                    insertionPoint++;
                 }
-
+                closestResponses.insert(closestResponses.begin() + insertionPoint, dictGraph[index][i]);
+                closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, current);
+            }else if(current < closestResponsesDist[MAXSUGGESTIONS - 1]){
+                int insertionPoint = 0;
+                while (insertionPoint < MAXSUGGESTIONS && 
+                    closestResponsesDist[insertionPoint] <= current) {
+                    insertionPoint++;
+                }
+                closestResponses.insert(closestResponses.begin() + insertionPoint, dictGraph[index][i]);
+                closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, current);
+                
+                closestResponses.pop_back();
+                closestResponsesDist.pop_back();
             }
         }
             /* Dont have to sort if already sorted

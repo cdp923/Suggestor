@@ -98,15 +98,15 @@ bool containSymbols(std::wstring input){
 int main(){
     dictGraph = initDictionary();
 
-    std::vector<std::wstring> wordCompletion = autoComplete(L"wi", dictGraph);
+    std::vector<std::wstring> wordCompletiot = autoComplete(L"wi", dictGraph);
     std::wstring word = L"acre";
-    std::vector<std::wstring> wordCorrection = autoCorrect(word, dictGraph);
+    std::vector<std::wstring> wordCorrectior = autoCorrect(word, dictGraph);
     word = L"acrw";
-    wordCorrection = autoCorrect(word, dictGraph);
+    std::vector<std::wstring> wordCorrectioe = autoCorrect(word, dictGraph);
     word = L"acrq";
-    wordCorrection = autoCorrect(word, dictGraph);
+    std::vector<std::wstring> wordCorrectiow = autoCorrect(word, dictGraph);
     word = L"acry";
-    wordCorrection = autoCorrect(word, dictGraph);
+    std::vector<std::wstring> wordCorrectioq = autoCorrect(word, dictGraph);
 
     return 0;
 }
