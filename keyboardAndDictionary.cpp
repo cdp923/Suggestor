@@ -114,7 +114,7 @@ int main(){
 cd ..
 cd..
 cd projects\textEditorAutoCorrectComplete
-g++ autocomplete.cpp keyboardAndDictionary.cpp mergeSort.cpp reverseInsertionSort.cpp autocomplete.cpp -o keyboardAndDictionary.exe
+g++ autocomplete.cpp keyboardAndDictionary.cpp mergeSort.cpp reverseInsertionSort.cpp autocorrect.cpp -o keyboardAndDictionary.exe
 keyboardAndDictionary.exe
 */
 

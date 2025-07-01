@@ -5,28 +5,23 @@
 
 
 bool binarySearch(std::vector<std::wstring>letterVector,int left, int right, std::wstring word){
+    printf("In BinarySearch. Word: %ls, Current: %ls",word.c_str(), letterVector[(left+right)/2].c_str() );
     if(letterVector.empty()||word.empty()){
-        if(!letterVector.empty()||!word.empty()){
             return false;
-        }
     }
     int stringIndex =0;
-    while (stringIndex<word.size()){
-        word[stringIndex] = std::tolower(word[stringIndex]);
-        stringIndex++;
-    }
     int middle = (left+right)/2;
     std::wstring current = letterVector[middle];
-    if (left<right){
+    if (left<=right){
         if (current == word){
+            printf("\n\nTrue! Word: %ls, Current: %ls",word.c_str(), letterVector[(left+right)/2].c_str() );
             return true;
         }
         if (current > word ){
-            return binarySearch(letterVector,left ,middle, word);
-        }
-        if(current>word){
-            return binarySearch(letterVector,middle+1 ,right, word);
-        }
+            return binarySearch(letterVector,left ,middle-1, word);
+        }    
+        return binarySearch(letterVector,middle+1 ,right, word);
+        
     }
     return false;
 }
@@ -35,8 +30,6 @@ int distBFS(char typedLetter, char dictionaryLetter){
     std::vector<int> pathNumber(MAXKEYCONNECTIONS);
     std::vector<int> distance(MAXKEYCONNECTIONS);
     std::vector<std::vector<char>> distanceSave(MAXKEYCONNECTIONS);
-    std::vector<char> dictGraphSave;
-    std::vector<std::vector<int>> dictGraphCount;
     std::queue<char> queue;
     char save;
     for (int x = 0; x<keyGraph.size();x++){ //initialize values of visited, path number and distance lists
@@ -80,7 +73,8 @@ std::vector<std::wstring> autoCorrect(std::wstring word, std::vector<std::vector
     int index = indexOfFirstChar(word);
     std::vector<std::wstring>letterVector = dictGraph[index];
     if(binarySearch(letterVector, 0, letterVector.size(), word)){
-        return;
+        printf("BinarySearch return true");
+        return closestResponses;
     }
 
     int responsesSaved = 0;
@@ -143,6 +137,7 @@ std::vector<std::wstring> autoCorrect(std::wstring word, std::vector<std::vector
         largestMinDist = closestResponsesDist[0];
         */
     }
+    printf("Here");
     for(int i=0;i<closestResponses.size();i++){
         printf("%ls\n",closestResponses[i].c_str());
     }
