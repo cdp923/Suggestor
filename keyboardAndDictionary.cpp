@@ -41,7 +41,7 @@ std::vector<std::vector<char>> initKeyboard(){
     std::vector<char> b = {'v','g','h','n'};
     std::vector<char> n = {'b','h','j','m'};
     std::vector<char> m = {'n','j','k'};
-    keyGraphInitilizer = {q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m};
+    keyGraphInitilizer = {a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z};
     return keyGraphInitilizer;
 } 
 std::vector<std::vector<std::wstring>> initDictionary(){
@@ -96,17 +96,18 @@ bool containSymbols(std::wstring input){
 }
 
 int main(){
-    dictGraph = initDictionary();
+    std::vector<std::vector<std::wstring>> dictGraph = initDictionary();
+    std::vector<std::vector<char>> keyGraph = initKeyboard();
 
-    std::vector<std::wstring> wordCompletiot = autoComplete(L"wi", dictGraph);
+    //std::vector<std::wstring> wordCompletiot = autoComplete(L"wi", dictGraph);
     std::wstring word = L"acre";
-    std::vector<std::wstring> wordCorrectior = autoCorrect(word, dictGraph);
+    std::vector<std::wstring> wordCorrectior = autoCorrect(word, dictGraph, keyGraph);
     word = L"acrw";
-    std::vector<std::wstring> wordCorrectioe = autoCorrect(word, dictGraph);
+    std::vector<std::wstring> wordCorrectioe = autoCorrect(word, dictGraph, keyGraph);
     word = L"acrq";
-    std::vector<std::wstring> wordCorrectiow = autoCorrect(word, dictGraph);
+    std::vector<std::wstring> wordCorrectiow = autoCorrect(word, dictGraph, keyGraph);
     word = L"acry";
-    std::vector<std::wstring> wordCorrectioq = autoCorrect(word, dictGraph);
+    std::vector<std::wstring> wordCorrectioq = autoCorrect(word, dictGraph, keyGraph);
 
     return 0;
 }
