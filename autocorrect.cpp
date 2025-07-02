@@ -42,7 +42,7 @@ int distBFS(char typedLetter, char dictionaryLetter, std::vector<std::vector<cha
     distance[position] =0;
     visited[position] = 0;
     queue.push(typedLetter);
-    printf("Typed char: %c, checking agaisnt: %c \n", typedLetter,dictionaryLetter);
+    //printf("Typed char: %c, checking agaisnt: %c \n", typedLetter,dictionaryLetter);
     if (typedLetter == dictionaryLetter){
         return 0;
     }
@@ -54,10 +54,10 @@ int distBFS(char typedLetter, char dictionaryLetter, std::vector<std::vector<cha
             printf("Error: current_index %d out of bounds\n", current);
             continue;
         }
-        printf("keyGraph[%c] =", save);
+        //printf("keyGraph[%c] =", save);
         for (int i =0; i<keyGraph[current].size();i++){ //might need to pass keyGraph
             int currentConnection = indexOfChar(keyGraph[current][i]);
-            printf(" %c,", keyGraph[current][i]);
+            //printf(" %c,", keyGraph[current][i]);
             if (currentConnection < 0 || currentConnection >= keyGraph.size()) {
                 printf("(invalid neighbor index %d)", currentConnection);
                 continue;
@@ -66,15 +66,15 @@ int distBFS(char typedLetter, char dictionaryLetter, std::vector<std::vector<cha
                 visited[currentConnection]=0;
                 distance[currentConnection] = distance[current]+1; //possibly break if distance[currentConnection] >2
                 if(dictionaryLetter == keyGraph[current][i]){
-                    printf("Distance is %i\n", distance[currentConnection]);
+                    //printf("\nDistance is %i\n", distance[currentConnection]);
                     return distance[currentConnection];
                 }
                 queue.push(keyGraph[current][i]);
             }
         }
-        printf("\n");
+        //printf("\n");
     }
-    printf("Distance out of loop is %i\n", distance[position]);
+    //printf("Distance out of loop is %i\n", distance[position]);
     return distance[position];
 }
 //implement character swaps and varying sizes
@@ -89,7 +89,7 @@ std::vector<std::wstring> autoCorrect(std::wstring word, std::vector<std::vector
     int index = indexOfFirstChar(word);
     std::vector<std::wstring>letterVector = dictGraph[index];
     printf("Word: %ls\n",word.c_str());
-    if(binarySearch(letterVector, 0, letterVector.size(), word)==true){
+    if(binarySearch(letterVector, 0, letterVector.size(), word)==true||word.size()<2){
         closestResponses.push_back(word);
         for(int i=0;i<closestResponses.size();i++){
             printf("%ls\n",closestResponses[i].c_str());
@@ -102,24 +102,21 @@ std::vector<std::wstring> autoCorrect(std::wstring word, std::vector<std::vector
     int current;
     for (int i= 0; i<dictGraph[index].size();i++){
         current = 0;
-        printf("Typed word: %ls, checking agaisnt: %ls \n", word.c_str(),dictGraph[index][i].c_str());
-        int maxLength = 0;
-        if(word.size()<dictGraph[index][i].size()){
-            maxLength = dictGraph[index][i].size();
+        //printf("Typed word: %ls, checking agaisnt: %ls \n", word.c_str(),dictGraph[index][i].c_str());
+        int minLength = 0;
+        int difference = 0;
+        if(word.size()>dictGraph[index][i].size()){
+            minLength = dictGraph[index][i].size();
+            difference = word.size()-dictGraph[index][i].size();
         }else{
-            maxLength = word.size();
+            minLength = word.size();
+            difference = dictGraph[index][i].size() - word.size();
         }
-        for (int x= 0; x<maxLength;x++){
-            if (word[x] == '\0') {
-                printf("Error: Invalid input characters\n");
-                current += 2;
-            } else if (dictGraph[index][i][x] == '\0') {
-                printf("Error: Invalid input characters\n");
-                current += 2; 
-            } else {
+        for (int x= 0; x<minLength;x++){
             current+=distBFS(word[x], dictGraph[index][i][x], keyGraph);
-            }
         }
+        current += (difference*2);
+        //printf("Past BFS search\n");
         if(largestMinDist > current){
             if(closestResponses.size()<MAXSUGGESTIONS){
                 int insertionPoint = 0;
@@ -143,6 +140,7 @@ std::vector<std::wstring> autoCorrect(std::wstring word, std::vector<std::vector
                 closestResponses.pop_back();
                 closestResponsesDist.pop_back();
             }
+            //printf("Word Done\n");
         }
             /* Dont have to sort if already sorted
             int tempDist;
@@ -179,9 +177,10 @@ std::vector<std::wstring> autoCorrect(std::wstring word, std::vector<std::vector
         largestMinDist = closestResponsesDist[0];
         */
     }
-    printf("Here");
+    //printf("Word: %ls\n", word.c_str());
+    printf("Best Responses: ");
     for(int i=0;i<closestResponses.size();i++){
-        printf("%ls\n",closestResponses[i].c_str());
+        printf("%ls, ",closestResponses[i].c_str());
     }
     printf("\n");
     return closestResponses;

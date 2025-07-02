@@ -2,6 +2,8 @@
 #include "autocomplete.h"
 #include "mergeSort.h" //runtime is to long. used.sort instead
 #include "autocorrect.h"
+#include <sstream>
+#include <windows.h> 
 
 #include <cstdio>
 #include <stdio.h>
@@ -98,7 +100,18 @@ bool containSymbols(std::wstring input){
 int main(){
     std::vector<std::vector<std::wstring>> dictGraph = initDictionary();
     std::vector<std::vector<char>> keyGraph = initKeyboard();
-
+    std::string input;
+    printf("Type: ");
+    std::getline(std::cin, input);
+    std::istringstream iss(input);
+    std::string seperate;
+    while ( getline( iss, seperate, ' ' ) ) {
+        int bufferSize = MultiByteToWideChar(CP_UTF8, 0, seperate.c_str(), -1, nullptr, 0);
+        std::wstring word(bufferSize - 1, L' ');
+        MultiByteToWideChar(CP_UTF8, 0, seperate.c_str(), -1, &word[0], bufferSize);
+        std::vector<std::wstring> wordCorrectior = autoCorrect(word, dictGraph, keyGraph);
+    }
+/*
     //std::vector<std::wstring> wordCompletiot = autoComplete(L"wi", dictGraph);
     std::wstring word = L"acre";
     std::vector<std::wstring> wordCorrectior = autoCorrect(word, dictGraph, keyGraph);
@@ -108,7 +121,7 @@ int main(){
     std::vector<std::wstring> wordCorrectiow = autoCorrect(word, dictGraph, keyGraph);
     word = L"acry";
     std::vector<std::wstring> wordCorrectioq = autoCorrect(word, dictGraph, keyGraph);
-
+*/
     return 0;
 }
 /*
