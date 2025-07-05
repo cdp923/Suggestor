@@ -100,6 +100,10 @@ bool containSymbols(std::wstring input){
 int main(){
     std::vector<std::vector<std::wstring>> dictGraph = initDictionary();
     std::vector<std::vector<char>> keyGraph = initKeyboard();
+    std::vector<std::wstring> test= letterDeletion(L"mixac");
+    //std::vector<std::wstring> test= letterInsert(L"mixac");
+    //std::vector<std::wstring> test= letterSwap(L"mixac");
+    
     std::string input;
     printf("Type: ");
     std::getline(std::cin, input);
@@ -109,7 +113,10 @@ int main(){
         int bufferSize = MultiByteToWideChar(CP_UTF8, 0, seperate.c_str(), -1, nullptr, 0);
         std::wstring word(bufferSize - 1, L' ');
         MultiByteToWideChar(CP_UTF8, 0, seperate.c_str(), -1, &word[0], bufferSize);
-        std::vector<std::wstring> wordCorrectior = autoCorrect(word, dictGraph, keyGraph);
+        //std::vector<std::wstring> wordCorrectior = fullAutoCorrect(word, dictGraph, keyGraph);
+        //std::vector<std::wstring> test= letterInsert(L"mixac");
+        std::vector<std::wstring> wordCorrectior = letterSwapAutoCorrect(word, dictGraph, keyGraph);
+        //std::vector<std::wstring> test= letterSwap(L"mixac");
     }
 /*
     //std::vector<std::wstring> wordCompletiot = autoComplete(L"wi", dictGraph);
