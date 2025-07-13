@@ -21,7 +21,6 @@ bool binarySearch(std::vector<std::wstring>&letterVector,int left, int right, st
     //printf("left: %i\n", middle+1);
     //printf("right: %i\n", right);
         if (current == word){
-            printf("\n\nTrue! Word: %ls, Current: %ls\n\n",word.c_str(), letterVector[middle].c_str() );
             return true;
         }
         if (current > word ){
@@ -34,7 +33,7 @@ bool binarySearch(std::vector<std::wstring>&letterVector,int left, int right, st
     return false;
 }
 int distBFS(char typedLetter, char dictionaryLetter, std::vector<std::vector<char>> keyGraph){
-    printf("In BFS search\n");
+    //printf("In BFS search\n");
     if (typedLetter == '\0' || dictionaryLetter == '\0') { //remove this and add correct logic
         printf("Error: Invalid input characters\n");
         return -1;
@@ -78,7 +77,7 @@ int distBFS(char typedLetter, char dictionaryLetter, std::vector<std::vector<cha
                 //    continue;
                 //}
                 if(dictionaryLetter == keyGraph[current][i]){
-                    printf("BFS return in loop\n");
+                    //printf("BFS return in loop\n");
                     //printf("\nDistance is %i\n", distance[currentConnection]);
                     return distance[currentConnection];
                 }
@@ -87,7 +86,7 @@ int distBFS(char typedLetter, char dictionaryLetter, std::vector<std::vector<cha
         }
         //printf("\n");
     }
-    printf("BFS return out of loop\n");
+    //printf("BFS return out of loop\n");
     //printf("Distance out of loop is %i\n", distance[position]);
     return distance[position]; //should always be 0, change later
 }
@@ -104,10 +103,6 @@ std::vector<std::wstring> letterSwap(std::wstring word){
         combinations.push_back(newWord);
     }
     
-    for(int i=0; i<combinations.size();i++){
-        printf("%ls\n", combinations[i].c_str());
-    }
-    printf("%ls\n", word.c_str());
     
     return combinations;
 }
@@ -161,7 +156,7 @@ std::vector<std::wstring> letterSwapAutoCorrect(std::wstring word, std::vector<s
             return closestResponses;
         }
         std::vector<std::wstring>letterVector = dictGraph[keyIndex];
-        printf("Word: %ls\n",combinations[index].c_str());
+        //printf("Word: %ls\n",combinations[index].c_str());
         if(binarySearch(letterVector, 0, letterVector.size()-1, combinations[index])==true||combinations[index].size()<2){
             closestResponses.push_back(combinations[index]);
             for(int i=0;i<closestResponses.size();i++){
@@ -169,7 +164,7 @@ std::vector<std::wstring> letterSwapAutoCorrect(std::wstring word, std::vector<s
             }
             return closestResponses;
         }
-        printf("binarySearch = false\n");
+        //printf("binarySearch = false\n");
         std::wstring combo = combinations[index];
         int responsesSaved = 0;
         int largestMinDist = 1000;
@@ -254,31 +249,26 @@ std::vector<std::wstring> fullAutoCorrect(std::wstring word, std::vector<std::ve
     for(int index=0;index<combinations.size(); index++){
         int keyIndex = indexOfFirstChar(combinations[index]);
         std::vector<std::wstring>letterVector = dictGraph[keyIndex];
-        printf("Word: %ls\n",combinations[index].c_str());
+        //printf("Word: %ls\n",combinations[index].c_str());
         if(binarySearch(letterVector, 0, letterVector.size()-1, combinations[index])==true||combinations[index].size()<2){
             closestResponses.push_back(combinations[index]);
-            for(int i=0;i<closestResponses.size();i++){
-                printf("Word match: %ls\n",closestResponses[i].c_str());
-            }
+            printf("Word exists: %ls (%ls)\n", combinations[index].c_str(), word.c_str());
             return closestResponses;
         }
     }
     printf("No words match %ls\n", combinations[0].c_str());
+    int largestMinDist = 1000;
     for(int index=0;index<combinations.size(); index++){
-        int largestMinDist = 1000;
+        //int largestMinDist = 1000;
         int keyIndex = indexOfFirstChar(combinations[index]);
-        printf("%i", dictGraph[keyIndex].size());
+        //printf("%i", dictGraph[keyIndex].size());
         std::wstring combo = combinations[index];
         int responsesSaved = 0;
         int current;
         for (int i= 0; i<dictGraph[keyIndex].size();i++){ //or dictGraph[index].size()
             if (combo.empty() || dictGraph[keyIndex][i].empty()) continue;
-            if (i > 1000) {  // Prevent infinite loops
-                printf("BREAK: Too many iterations!\n");
-                break;
-            }
             current = 0;
-            printf("Word: %ls, checking agaisnt: %ls \n", combo.c_str(),dictGraph[keyIndex][i].c_str());
+            //printf("Word: %ls, checking agaisnt: %ls \n", combo.c_str(),dictGraph[keyIndex][i].c_str());
             int minLength = 0;
             int difference = 0; //Gives weight to additional or missing letters
             /*
@@ -295,7 +285,7 @@ std::vector<std::wstring> fullAutoCorrect(std::wstring word, std::vector<std::ve
             current += (difference*2);
             */
             if(combo.size()!=dictGraph[keyIndex][i].size()){
-                printf("continue\n");
+                //printf("continue\n");
                 continue;
             }
             for (int x= 0; x<combo.size();x++){
@@ -303,7 +293,7 @@ std::vector<std::wstring> fullAutoCorrect(std::wstring word, std::vector<std::ve
             }
             //printf("Past BFS search\n");
             if(largestMinDist > current){
-                printf("New smallest dist: (%ls, %i) \n", dictGraph[keyIndex][i].c_str(), current);
+                printf("New smallest dist: (%ls, %ls, %i) \n", dictGraph[keyIndex][i].c_str(), combo.c_str(), current);
                 //insert in order to reduce time spent searching
                 if(closestResponses.size()<MAXSUGGESTIONS){
                     int insertionPoint = 0;
