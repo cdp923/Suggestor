@@ -100,10 +100,18 @@ bool containSymbols(std::wstring input){
 int main(){
     std::vector<std::vector<std::wstring>> dictGraph = initDictionary();
     std::vector<std::vector<char>> keyGraph = initKeyboard();
-    std::vector<std::wstring> test= letterDeletion(L"mixac");
+    //std::vector<std::wstring> test= letterDeletion(L"mixac");
     //std::vector<std::wstring> test= letterInsert(L"mixac");
     //std::vector<std::wstring> test= letterSwap(L"mixac");
-    
+    /*
+    std::vector<std::wstring> test= letterSwap(L"pizza");
+    std::vector<std::vector<std::wstring>> smallDict = {
+    { L"pizza", L"pizaz", L"piazz"},  // Only a few words for 'p'
+    {L"xtra", L"xart", L"xrat"}      // Only a few words for 'x'
+};
+std::vector<std::wstring> result = letterSwapAutoCorrect(L"pizza", smallDict, keyGraph);
+*/
+    ///*
     std::string input;
     printf("Type: ");
     std::getline(std::cin, input);
@@ -116,8 +124,10 @@ int main(){
         //std::vector<std::wstring> wordCorrectior = fullAutoCorrect(word, dictGraph, keyGraph);
         //std::vector<std::wstring> test= letterInsert(L"mixac");
         std::vector<std::wstring> wordCorrectior = letterSwapAutoCorrect(word, dictGraph, keyGraph);
-        //std::vector<std::wstring> test= letterSwap(L"mixac");
+        //std::vector<std::wstring> wordCorrectior = simpleAutoCorrect(word, dictGraph, keyGraph);
+        //std::vector<std::wstring> test= letterSwap(L"systen");
     }
+    //*/
 /*
     //std::vector<std::wstring> wordCompletiot = autoComplete(L"wi", dictGraph);
     std::wstring word = L"acre";
@@ -133,7 +143,7 @@ int main(){
 }
 /*
 cd ..
-cd..
+cd ..
 cd projects\textEditorAutoCorrectComplete
 g++ autocomplete.cpp keyboardAndDictionary.cpp mergeSort.cpp reverseInsertionSort.cpp autocorrect.cpp -o keyboardAndDictionary.exe
 keyboardAndDictionary.exe
