@@ -123,7 +123,7 @@ std::vector<std::wstring> result = letterSwapAutoCorrect(L"pizza", smallDict, ke
         MultiByteToWideChar(CP_UTF8, 0, seperate.c_str(), -1, &word[0], bufferSize);
         //std::vector<std::wstring> wordCorrectior = fullAutoCorrect(word, dictGraph, keyGraph);
         //std::vector<std::wstring> test= letterInsert(L"mixac");
-        std::vector<std::wstring> wordCorrectior = fullAutoCorrect(word, dictGraph, keyGraph);
+        std::vector<std::wstring> wordCorrectior = autoCorrect(word, dictGraph, keyGraph);
         //std::vector<std::wstring> wordCorrectior = simpleAutoCorrect(word, dictGraph, keyGraph);
         //std::vector<std::wstring> test= letterSwap(L"systen");
     }
@@ -147,5 +147,5 @@ cd ..
 cd projects\textEditorAutoCorrectComplete
 g++ autocomplete.cpp keyboardAndDictionary.cpp mergeSort.cpp reverseInsertionSort.cpp autocorrect.cpp -o keyboardAndDictionary.exe
 keyboardAndDictionary.exe
-thsi si a teft of the system
+thsi si a teft of the systen
 */
