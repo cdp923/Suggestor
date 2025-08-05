@@ -1,4 +1,4 @@
 #include <vector>
 #include <string>
 
-std::vector<std::wstring> autoComplete(std::wstring input, std::vector<std::vector<std::wstring>>dictionary);
+std::vector<std::string> autoComplete(std::string input, std::vector<std::vector<std::string>>dictionary);

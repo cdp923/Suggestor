@@ -1,12 +1,12 @@
 #include "autocomplete.h"
-#include "keyboardAndDictionary.h"
+#include "resources/algorithms.h"
 #include <fstream>
 #include <iostream>
 #include <algorithm>
 
 
-std::vector<std::wstring> autoComplete(std::wstring input, std::vector<std::vector<std::wstring>>dictionary){
-    std::vector<std::wstring> suggestionVector(5);
+std::vector<std::string> autoComplete(std::string input, std::vector<std::vector<std::string>>dictionary){
+    std::vector<std::string> suggestionVector(5);
     int stringIndex =0;
     while (stringIndex<input.size()){
         input[stringIndex] = std::tolower(input[stringIndex]);
@@ -40,3 +40,6 @@ std::vector<std::wstring> autoComplete(std::wstring input, std::vector<std::vect
     }
     return suggestionVector;
 }
+/*
+DB attributes: word_text, frequency, last_used_timestamp (maybe), language_code, is_common_typo_for and source
+*/
