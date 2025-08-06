@@ -1,4 +1,4 @@
-#include "database/attributes.h"
+#include "resources/database/attributes.h"
 
 #include <string>
 #include <vector>

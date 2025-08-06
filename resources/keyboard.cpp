@@ -34,8 +34,8 @@ std::vector<std::vector<char>> initKeyboard(){
 /*
 cd ..
 cd ..
-cd projects\textEditorAutoCorrectComplete
-g++ autocomplete.cpp keyboardAndDictionary.cpp mergeSort.cpp reverseInsertionSort.cpp autocorrect.cpp -o keyboardAndDictionary.exe
-keyboardAndDictionary.exe
+cd projects\corrector
+g++ autoSuggest.cpp autocomplete.cpp  resources/keyboard.cpp resources/algorithms.cpp resources/wordCombos.cpp-o keyboard.exe
+keyboard.exe
 thsi si a teft of the systen
 */

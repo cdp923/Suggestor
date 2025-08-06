@@ -1,7 +1,7 @@
 #include "autoSuggest.h"
 #include "resources/algorithms.h"
 #include "resources/wordCombos.h"
-#include "database/attributes.h"
+#include "resources/database/attributes.h"
 #include <queue>
 #include <Windows.h>
 
@@ -10,52 +10,49 @@
 void closestWordSearch(std::vector<std::string> &combinations, std::vector<std::string> &closestResponses,
     std::vector<int> &closestResponsesDist, sqlite3* &db, const std::vector<std::vector<char>>&keyGraph, float &largestMinDist, float weight){ 
     for(int index=0;index<combinations.size(); index++){
+        bfsInfo bfsInfo;
         int keyIndex = indexOfFirstChar(combinations[index]);
-        std::string combo = combinations[index];
+        std::string word = combinations[index];
         int responsesSaved = 0;
         float current;
-            if (combo.empty()) {
+            if (word.empty()) {
                 continue;
             }
             if (!dictExists(db)) {
                 return;
             }
             current = 0;
-            if(combo.size()!=db[keyIndex][i].size()){
-                //printf("continue\n");
-                continue;
-            }
-        for (int x= 0; x<combo.size();x++){
-            current+=distBFS(combo[x], db, keyGraph);
-        }
+            bfsInfo = wordDistBFS(db, word, keyGraph);
         current+=weight;
         //printf("Past BFS search\n");
-        if(largestMinDist > current){
-            //printf("New smallest dist: (%ls, %ls, %d) \n", db[keyIndex][i].c_str(), combo.c_str(), current);
-            //insert in order to reduce time spent searching
-            if(closestResponses.size()<MAXSUGGESTIONS){
-                int insertionPoint = 0;
-                while (insertionPoint < closestResponses.size() && 
-                    closestResponsesDist[insertionPoint] <= current) {
-                    insertionPoint++;
+        for (int i = 0; i< bfsInfo.word.size(); i++){
+            if(largestMinDist > current){
+                //printf("New smallest dist: (%ls, %ls, %d) \n", db[keyIndex][i].c_str(), combo.c_str(), current);
+                //insert in order to reduce time spent searching
+                if(closestResponses.size()<MAXSUGGESTIONS){
+                    int insertionPoint = 0;
+                    while (insertionPoint < closestResponses.size() && 
+                        closestResponsesDist[insertionPoint] <= current) {
+                        insertionPoint++;
+                    }
+                    closestResponses.insert(closestResponses.begin() + insertionPoint, bfsInfo.word[i]);
+                    closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, bfsInfo.dist[i]);
+                    largestMinDist = (float) closestResponsesDist[insertionPoint];
+                }else if(current < closestResponsesDist[MAXSUGGESTIONS - 1]){
+                    int insertionPoint = 0;
+                    while (insertionPoint < MAXSUGGESTIONS && 
+                        closestResponsesDist[insertionPoint] <= current) {
+                        insertionPoint++;
+                    }
+                    closestResponses.insert(closestResponses.begin() + insertionPoint, bfsInfo.word[i]);
+                    closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, bfsInfo.dist[i]);
+                    largestMinDist = (float) closestResponsesDist[insertionPoint];
+                    
+                    closestResponses.pop_back();
+                    closestResponsesDist.pop_back();
                 }
-                closestResponses.insert(closestResponses.begin() + insertionPoint, db[keyIndex][i]);
-                closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, current);
-                largestMinDist = (float) closestResponsesDist[insertionPoint];
-            }else if(current < closestResponsesDist[MAXSUGGESTIONS - 1]){
-                int insertionPoint = 0;
-                while (insertionPoint < MAXSUGGESTIONS && 
-                    closestResponsesDist[insertionPoint] <= current) {
-                    insertionPoint++;
-                }
-                closestResponses.insert(closestResponses.begin() + insertionPoint, db[keyIndex][i]);
-                closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, current);
-                largestMinDist = (float) closestResponsesDist[insertionPoint];
-                
-                closestResponses.pop_back();
-                closestResponsesDist.pop_back();
+                //printf("Word Done\n");
             }
-            //printf("Word Done\n");
         }
 
     }

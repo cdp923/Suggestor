@@ -58,7 +58,7 @@ std::vector<std::string> getWordAttributes(sqlite3* db, const WordData &wordData
     }
     return attributes;
 }
-bool wordExists(sqlite3* db, std::vector<std::string> wordCombos){
+bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos){
     sqlite3_stmt* stmt;
     const char* sql = "SELECT EXISTS(SELECT 1 FROM dictionary WHERE word = ?);";
     for(int index = 0; index<wordCombos.size();index++){    
@@ -86,6 +86,37 @@ bool wordExists(sqlite3* db, std::vector<std::string> wordCombos){
             std::cerr << "Error executing query: " << sqlite3_errmsg(db) << std::endl;
             return false;
         }
+    }
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    return false;
+}
+bool wordExists(sqlite3* db, std::string& word){
+    sqlite3_stmt* stmt;
+    const char* sql = "SELECT EXISTS(SELECT 1 FROM dictionary WHERE word = ?);";
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to prepare select statement: " << sqlite3_errmsg(db) << std::endl;
+        return false; 
+    }
+    sqlite3_bind_text(stmt, WORD, word.c_str(), -1, SQLITE_TRANSIENT);
+        rc = sqlite3_step(stmt);
+
+    if (rc == SQLITE_ROW) {
+        // The first column of the result set is the boolean value (0 or 1)
+        int exists = sqlite3_column_int(stmt, 0);
+        if (exists == 1) {
+            return true;
+        } else {
+            std::cout << "The word '" << word << "' does not exist in the database." << std::endl;
+            return false;
+        }
+    } else if (rc == SQLITE_DONE) {
+        return false;
+    } else {
+        std::cerr << "Error executing query: " << sqlite3_errmsg(db) << std::endl;
+        return false;
     }
     sqlite3_finalize(stmt);
     sqlite3_close(db);
