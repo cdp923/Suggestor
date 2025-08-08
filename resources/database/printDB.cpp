@@ -43,6 +43,6 @@ cd ..
 cd ..
 cd projects/textEditorAutoCorrectComplete
 g++ autoSuggest.cpp autocomplete.cpp  resources/keyboard.cpp resources/algorithms.cpp resources/wordCombos.cpp-o keyboard.exe
-g++ database/printDB.cpp database/dbMethods.cpp -x c database/sqlite/sqlite3.c -o printDB.exe
+g++ database/methods.cpp -x c database/sqlite/sqlite3.c -o printDB.exe
 printDB.exe
 */

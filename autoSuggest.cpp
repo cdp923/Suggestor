@@ -2,10 +2,13 @@
 #include "resources/algorithms.h"
 #include "resources/wordCombos.h"
 #include "resources/database/attributes.h"
+#include <iostream> 
+
 #include <queue>
 #include <Windows.h>
 
 #define MAXSUGGESTIONS 3
+const std::string tableName = "dictionary";
 
 void closestWordSearch(std::vector<std::string> &combinations, std::vector<std::string> &closestResponses,
     std::vector<int> &closestResponsesDist, sqlite3* &db, const std::vector<std::vector<char>>&keyGraph, float &largestMinDist, float weight){ 
@@ -57,7 +60,7 @@ void closestWordSearch(std::vector<std::string> &combinations, std::vector<std::
 
     }
 }
-std::vector<std::string> autoCorrect(std::string word, sqlite3* db, std::vector<std::vector<char>> &keyGraph){
+std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<std::vector<char>> &keyGraph){
     int stringIndex =0;
     while (stringIndex<word.size()){
         word[stringIndex] = std::tolower(word[stringIndex]);

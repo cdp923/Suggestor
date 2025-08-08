@@ -15,7 +15,7 @@ int getWordFrequency(sqlite3* db,const WordData &wordData){
         std::cerr << "Failed to prepare select statement: " << sqlite3_errmsg(db) << std::endl;
         return frequency; 
     }
-    sqlite3_bind_text(stmt, WORD, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, WORDTXT, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to update: " << sqlite3_errmsg(db) << std::endl;
@@ -40,14 +40,14 @@ std::vector<std::string> getWordAttributes(sqlite3* db, const WordData &wordData
         std::cerr << "Failed to prepare select statement: " << sqlite3_errmsg(db) << std::endl;
         return attributes; 
     }
-    sqlite3_bind_text(stmt, WORD, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, WORDTXT, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to bind: " << sqlite3_errmsg(db) << std::endl;
         return attributes; 
     }
     if (rc == SQLITE_ROW) {
-        attributes[WORD-1] = wordData.word;
+        attributes[WORDTXT-1] = wordData.word;
         attributes[FREQUENCY-1] = sqlite3_column_int(stmt,FREQUENCY);
         attributes[TIME-1] = sqlite3_column_int(stmt,TIME);
         attributes[SOURCE-1] = sqlite3_column_int(stmt,SOURCE);
@@ -68,7 +68,7 @@ bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos){
             std::cerr << "Failed to prepare select statement: " << sqlite3_errmsg(db) << std::endl;
             return false; 
         }
-        sqlite3_bind_text(stmt, WORD, word.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_TRANSIENT);
             rc = sqlite3_step(stmt);
 
         if (rc == SQLITE_ROW) {
@@ -100,7 +100,7 @@ bool wordExists(sqlite3* db, std::string& word){
         std::cerr << "Failed to prepare select statement: " << sqlite3_errmsg(db) << std::endl;
         return false; 
     }
-    sqlite3_bind_text(stmt, WORD, word.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_TRANSIENT);
         rc = sqlite3_step(stmt);
 
     if (rc == SQLITE_ROW) {

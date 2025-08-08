@@ -1,4 +1,5 @@
 #include "algorithms.h"
+#include "database/attributes.h"
 
 #include <vector>
 #include <string>
@@ -21,7 +22,7 @@ bool containSymbols(std::string input){
     }
     return false;
 }
-bfsInfo wordDistBFS(sqlite3* db, std::string& word,std::vector<std::vector<char>>& keyGraph){
+bfsInfo wordDistBFS(sqlite3* db, std::string& word,const std::vector<std::vector<char>>& keyGraph){
     //printf("In BFS search\n");
     bfsInfo bfsInfo;
     int totalDistance = -1;

@@ -1,4 +1,5 @@
 #include "methods.h"
+#include "attributes.h"
 #include <fstream>
 #include <iostream>
 
@@ -29,7 +30,7 @@ bool deleteWord(sqlite3* db, const WordData &wordData){
         std::cerr << "Failed to prepare select statement: " << sqlite3_errmsg(db) << std::endl;
         return false; 
     }
-    sqlite3_bind_text(stmt, WORD, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, WORDTXT, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
     bool result = (sqlite3_step(stmt)== SQLITE_DONE);
     if (result != SQLITE_OK) {
         std::cerr << "Failed to delete: " << sqlite3_errmsg(db) << std::endl;
@@ -43,7 +44,7 @@ bool dbInsert(sqlite3* db, const WordData &wordData){
     const char* sql = "INSERT INTO dictionary (word, frequency, time, source) VALUES (?, ?, ?, ?);";
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
 
-    sqlite3_bind_text(stmt, WORD, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, WORDTXT, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, FREQUENCY, 1); 
     sqlite3_bind_int(stmt, TIME, wordData.time); 
     sqlite3_bind_text(stmt, SOURCE, wordData.source.c_str(), -1, SQLITE_TRANSIENT);
@@ -88,7 +89,7 @@ bool batchInsertWords(sqlite3* db, const std::string& filePath) {
     const char* source = "dict";
 
     while (file >> word) {
-        sqlite3_bind_text(stmt, WORD, word.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_int(stmt, FREQUENCY, 1);
         sqlite3_bind_int(stmt, TIME, currentTime);
         sqlite3_bind_text(stmt, SOURCE, source, -1, SQLITE_STATIC);
@@ -133,7 +134,7 @@ bool dbUpdate(sqlite3* db,const WordData &wordData){
  
     sqlite3_bind_int(stmt, FREQUENCY, frequency+1); 
     sqlite3_bind_int(stmt, TIME, wordData.time); 
-    sqlite3_bind_text(stmt, WORD, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, WORDTXT, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
 
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE) {
@@ -184,7 +185,7 @@ void printDB(sqlite3*& db){
         return;
     } 
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-        const char* word = (const char*)sqlite3_column_text(stmt, WORD-1);
+        const char* word = (const char*)sqlite3_column_text(stmt, WORDTXT-1);
         const char* source = (const char*)sqlite3_column_text(stmt, SOURCE-1);
         
         int frequency = sqlite3_column_int(stmt, FREQUENCY-1);

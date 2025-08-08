@@ -1,4 +1,7 @@
+#include "sqlite/sqlite3.h"
 #include "attributes.h"
+#include <vector>
+#include <string>
 
 bool createDictTable(sqlite3* db);
 bool dbInsert(sqlite3* db,sqlite3_stmt* stmt, const char* sql, const WordData &wordData);
