@@ -1,6 +1,17 @@
 #include "attributes.h"
 #include <iostream>
 #include <chrono>
+bool containSymbols(std::string input){
+    int stringIndex =0;
+    while (stringIndex<input.size()){
+        if ((int)input[stringIndex]>122 || (int)input[stringIndex]<97){
+            return true;
+
+        }
+        stringIndex++;
+    }
+    return false;
+}
 time_t getCurrentTime(){
     std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     std::time_t timeValue = std::chrono::system_clock::to_time_t(now);
@@ -58,11 +69,16 @@ std::vector<std::string> getWordAttributes(sqlite3* db, const WordData &wordData
     }
     return attributes;
 }
+
 bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos){
     sqlite3_stmt* stmt;
     const char* sql = "SELECT EXISTS(SELECT 1 FROM dictionary WHERE word = ?);";
     for(int index = 0; index<wordCombos.size();index++){    
         std::string word = wordCombos[index];
+        if(word.size()<2){
+            std::cout << "The word '" << word << "' exists in the database." << std::endl;
+            return true;
+        }
         int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
         if (rc != SQLITE_OK) {
             std::cerr << "Failed to prepare select statement: " << sqlite3_errmsg(db) << std::endl;
@@ -75,6 +91,7 @@ bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos){
             // The first column of the result set is the boolean value (0 or 1)
             int exists = sqlite3_column_int(stmt, 0);
             if (exists == 1) {
+                std::cout << "The word '" << word << "' exists in the database." << std::endl;
                 return true;
             } else {
                 std::cout << "The word '" << word << "' does not exist in the database." << std::endl;
@@ -88,11 +105,13 @@ bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos){
         }
     }
     sqlite3_finalize(stmt);
-    sqlite3_close(db);
-
     return false;
 }
 bool wordExists(sqlite3* db, std::string& word){
+    if(word.size()<2){
+        std::cout << "The word '" << word << "' exists in the database." << std::endl;
+        return true;
+    }
     sqlite3_stmt* stmt;
     const char* sql = "SELECT EXISTS(SELECT 1 FROM dictionary WHERE word = ?);";
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
@@ -107,6 +126,7 @@ bool wordExists(sqlite3* db, std::string& word){
         // The first column of the result set is the boolean value (0 or 1)
         int exists = sqlite3_column_int(stmt, 0);
         if (exists == 1) {
+            std::cout << "The word '" << word << "' exists in the database." << std::endl;
             return true;
         } else {
             std::cout << "The word '" << word << "' does not exist in the database." << std::endl;
@@ -119,8 +139,6 @@ bool wordExists(sqlite3* db, std::string& word){
         return false;
     }
     sqlite3_finalize(stmt);
-    sqlite3_close(db);
-
     return false;
 }
 bool dictExists(sqlite3* db){
@@ -147,3 +165,58 @@ bool dictExists(sqlite3* db){
     sqlite3_finalize(stmt);
     return exists;
 } 
+std::vector<std::string> getWordsStartingWith(sqlite3* db, char firstLetter){
+    std::vector<std::string> words;
+    sqlite3_stmt* stmt;
+    
+    std::string letterStr(1, firstLetter);
+    const char* sql = "SELECT word FROM dictionary WHERE word LIKE ? || '%' ORDER BY frequency DESC, word;";
+    
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to prepare select statement: " << sqlite3_errmsg(db) << std::endl;
+        return words;
+    }
+    
+    sqlite3_bind_text(stmt, 1, letterStr.c_str(), -1, SQLITE_TRANSIENT);
+    //printf("Words starting with %c", firstLetter," : \n");
+    
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        const char* word = (const char*)sqlite3_column_text(stmt, 0);
+        if (word) {
+            //printf("%s, ", word,"\n");
+            words.push_back(std::string(word));
+        }
+    }
+    
+    sqlite3_finalize(stmt);
+    return words;
+}
+std::vector<std::string> getSubset(sqlite3* db, std::string prefix){
+    std::vector<std::string> words;
+    sqlite3_stmt* stmt;
+    
+    const char* sql = "SELECT word FROM dictionary WHERE word LIKE ? || '%' ORDER BY frequency DESC, word;";
+    
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to prepare select statement: " << sqlite3_errmsg(db) << std::endl;
+        return words;
+    }
+    
+    sqlite3_bind_text(stmt, 1, prefix.c_str(), -1, SQLITE_TRANSIENT);
+    //printf("Words starting with %c", firstLetter," : \n");
+    printf("Suggested words: ");
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        const char* word = (const char*)sqlite3_column_text(stmt, 0);
+        if (word != nullptr && (words.size()<MAXSUGGESTIONS)) {
+            //printf("%s, ", word,"\n");
+            words.push_back(std::string(word));
+            printf("%s, ",std::string(word).c_str());
+        }
+    }
+    printf("\n");
+    
+    sqlite3_finalize(stmt);
+    return words;
+}

@@ -1,4 +1,5 @@
+#include "resources/database/sqlite/sqlite3.h"
 #include <vector>
 #include <string>
 
-std::vector<std::string> autoComplete(std::string input, std::vector<std::vector<std::string>>dictionary);
+std::vector<std::string> autoComplete(sqlite3* db, std::string input);

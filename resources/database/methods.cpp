@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iostream>
 
-
 bool createDictTable(sqlite3* db){
     const char* table = "CREATE TABLE IF NOT EXISTS dictionary("
                         "word TEXT PRIMARY KEY NOT NULL,"
@@ -43,7 +42,9 @@ bool dbInsert(sqlite3* db, const WordData &wordData){
     sqlite3_stmt* stmt;
     const char* sql = "INSERT INTO dictionary (word, frequency, time, source) VALUES (?, ?, ?, ?);";
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
-
+    if (containSymbols(wordData.word)){
+        return false;
+    }
     sqlite3_bind_text(stmt, WORDTXT, wordData.word.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, FREQUENCY, 1); 
     sqlite3_bind_int(stmt, TIME, wordData.time); 
@@ -61,8 +62,9 @@ bool dbInsert(sqlite3* db, const WordData &wordData){
 bool batchInsertWords(sqlite3* db, const std::string& filePath) {
     std::ifstream file(filePath);
     if (!file.is_open()) {
+        std::ofstream file(filePath);
         std::cerr << "Unable to open file: " << filePath << std::endl;
-        return false;
+        //return false;
     }
 
     const char* sql = "INSERT INTO dictionary (word, frequency, time, source) VALUES (?, ?, ?, ?);";
@@ -89,6 +91,9 @@ bool batchInsertWords(sqlite3* db, const std::string& filePath) {
     const char* source = "dict";
 
     while (file >> word) {
+        if (containSymbols(word)){
+            continue;
+        }
         sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_int(stmt, FREQUENCY, 1);
         sqlite3_bind_int(stmt, TIME, currentTime);
@@ -96,7 +101,7 @@ bool batchInsertWords(sqlite3* db, const std::string& filePath) {
 
         rc = sqlite3_step(stmt);
         if (rc != SQLITE_DONE) {
-            std::cerr << "Insertion failed for word '" << word << "': " << sqlite3_errmsg(db) << std::endl;
+            //std::cerr << "Insertion failed for word '" << word << "': " << sqlite3_errmsg(db) << std::endl;
         }
 
         sqlite3_reset(stmt);
@@ -105,7 +110,7 @@ bool batchInsertWords(sqlite3* db, const std::string& filePath) {
         // Periodic commit to avoid huge transactions
         if (insertCount % BATCH_SIZE == 0) {
             sqlite3_exec(db, "COMMIT; BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
-            std::cout << "Inserted " << insertCount << " words..." << std::endl;
+            //std::cout << "Inserted " << insertCount << " words..." << std::endl;
         }
     }
 
