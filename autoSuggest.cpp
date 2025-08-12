@@ -45,34 +45,7 @@ void closestWordSearch(std::vector<std::string>& combinations, std::vector<std::
             }
             current += weight;
             //printf("Past BFS search\n");
-            if (largestMinDist > current || closestResponses.size() < MAXSUGGESTIONS) {
-                if (closestResponses.size() < MAXSUGGESTIONS) {
-                    int insertionPoint = 0;
-                    while (insertionPoint < closestResponses.size() && 
-                        closestResponsesDist[insertionPoint] <= current) {
-                        insertionPoint++;
-                    }
-                    closestResponses.insert(closestResponses.begin() + insertionPoint, dictWord);
-                    closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, (int)current);
-                    
-                    if (closestResponses.size() > 0) {
-                        largestMinDist = (float)closestResponsesDist[closestResponses.size() - 1];
-                    }
-                } else if (current < closestResponsesDist[MAXSUGGESTIONS - 1]) {
-                    int insertionPoint = 0;
-                    while (insertionPoint < MAXSUGGESTIONS && 
-                        closestResponsesDist[insertionPoint] <= current) {
-                        insertionPoint++;
-                    }
-                    closestResponses.insert(closestResponses.begin() + insertionPoint, dictWord);
-                    closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, (int)current);
-                    
-                    closestResponses.pop_back();
-                    closestResponsesDist.pop_back();
-                    
-                    largestMinDist = (float)closestResponsesDist[MAXSUGGESTIONS - 1];
-                }
-            }
+            insertClosestMatch(closestResponses, closestResponsesDist,dictWord,largestMinDist,current);
         }
     }
 }

@@ -72,37 +72,34 @@ int distBFS(char typedLetter, char dictionaryLetter, const std::vector<std::vect
 }
 void insertClosestMatch(std::vector<std::string>& closestResponses, std::vector<int>& closestResponsesDist,
                         const std::string& dictWord,
+                        int largestMinDist,
                         float current) 
     {
-    float largestMinDist = closestResponsesDist[closestResponsesDist.size()];
     if (largestMinDist > current || closestResponses.size() < MAXSUGGESTIONS) {
         if (closestResponses.size() < MAXSUGGESTIONS) {
             int insertionPoint = 0;
             while (insertionPoint < closestResponses.size() && 
-                   closestResponsesDist[insertionPoint] <= current) 
-            {
+                closestResponsesDist[insertionPoint] <= current) {
                 insertionPoint++;
             }
             closestResponses.insert(closestResponses.begin() + insertionPoint, dictWord);
             closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, (int)current);
-
-            if (!closestResponses.empty()) {
-                largestMinDist = (float)closestResponsesDist.back();
+            
+            if (closestResponses.size() > 0) {
+                largestMinDist = (float)closestResponsesDist[closestResponses.size() - 1];
             }
-        } 
-        else if (current < closestResponsesDist[MAXSUGGESTIONS - 1]) {
+        } else if (current < closestResponsesDist[MAXSUGGESTIONS - 1]) {
             int insertionPoint = 0;
             while (insertionPoint < MAXSUGGESTIONS && 
-                   closestResponsesDist[insertionPoint] <= current) 
-            {
+                closestResponsesDist[insertionPoint] <= current) {
                 insertionPoint++;
             }
             closestResponses.insert(closestResponses.begin() + insertionPoint, dictWord);
             closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, (int)current);
-
+            
             closestResponses.pop_back();
             closestResponsesDist.pop_back();
-
+            
             largestMinDist = (float)closestResponsesDist[MAXSUGGESTIONS - 1];
         }
     }
