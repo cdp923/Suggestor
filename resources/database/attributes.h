@@ -23,7 +23,7 @@ bool containSymbols(std::string input);
 time_t getCurrentTime();
 int getWordFrequency(sqlite3* db,const WordData &wordData);
 std::vector<std::string> getWordAttributes(sqlite3* db, const WordData &wordData);
-bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos);//word combos
+bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos, std::vector<std::string>& comboSave);//word combos
 //bool wordExists(sqlite3* db, std::string& word); //single word
 bool dictExists(sqlite3* db);
 std::vector<std::string> getWordsStartingWith(sqlite3* db, char firstLetter);

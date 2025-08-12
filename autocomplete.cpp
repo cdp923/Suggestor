@@ -11,8 +11,8 @@ std::vector<std::string> autoComplete(sqlite3* db, std::string input){
         input[stringIndex] = std::tolower(input[stringIndex]);
         stringIndex++;
     }
-    if (input.size() <= 1 || containSymbols(input)){
-        printf("return empty vector. input.size() <= 1 || containSymbols(input)");
+    if (containSymbols(input)){
+        printf("containSymbols(input)");
         suggestionVector.resize(0);
         return suggestionVector;
     }

@@ -57,47 +57,32 @@ std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<
     }
     float weight = .1;
     std::vector<std::string> combinations;
+    std::vector<std::string> combinationSave;
     std::vector<std::string> closestResponses;
     std::vector<int> closestResponsesDist;
     float largestMinDist = 1000;
     combinations.push_back(word);
-    printf("Before og word\n");
-    if(wordExists(db, combinations)){
-        //printf("in word exists\n");
-        return closestResponses;
+    combinationSave = letterSwap(word);
+    combinations.insert(combinations.end(), combinationSave.begin(), combinationSave.end());
+    combinationSave.clear();
+    combinationSave = letterInsert(word);
+    combinations.insert(combinations.end(), combinationSave.begin(), combinationSave.end());
+    combinationSave.clear();
+    //printf("Before og word\n")
+    combinationSave = letterDeletion(word);
+    combinations.insert(combinations.end(), combinationSave.begin(), combinationSave.end());
+    combinationSave.clear();
+    if(wordExists(db, combinations, combinationSave)){
+        //printf("in word exists\n")
+        for(int i = 0; i< combinationSave.size(); i++){
+            insertClosestMatch(closestResponses, closestResponsesDist,combinationSave[i],largestMinDist,weight);
+        }
     }
     //printf("after word exists, before closest word search\n");
     closestWordSearch(combinations, closestResponses, closestResponsesDist, db, keyGraph, largestMinDist, weight);
     weight++;
-
-    printf("Before swap\n");
-    combinations.clear();
-    combinations = letterSwap(word);
-    if(wordExists(db, combinations)){
-        return closestResponses;
-    }
-    closestWordSearch(combinations, closestResponses, closestResponsesDist, db, keyGraph, largestMinDist, weight);
-    weight++;
-    printf("Before insert\n");
-    combinations.clear();
-    combinations = letterInsert(word);
-    if(wordExists(db, combinations)){
-        return closestResponses;
-    }
-    closestWordSearch(combinations, closestResponses, closestResponsesDist, db, keyGraph, largestMinDist, weight);
-    weight++;
-
-    combinations.clear();
-    printf("Before delete\n");
-    combinations = letterDeletion(word);
-    if(wordExists(db, combinations)){
-        return closestResponses;
-    }
-    closestWordSearch(combinations, closestResponses, closestResponsesDist, db, keyGraph, largestMinDist, weight);
-    weight++;
-    printf("No words match %s\n", word.c_str());
     //printf("Word: %ls\n", word.c_str());
-    printf("Best Responses: ");
+    printf("Best Responses (%s): ", word.c_str());
     for(int i=0;i<closestResponses.size();i++){
         printf("%s ",closestResponses[i].c_str());
     }

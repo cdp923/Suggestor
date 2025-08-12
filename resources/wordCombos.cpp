@@ -29,6 +29,9 @@ std::vector<std::string> letterDeletion(std::string word){
     for(int index=0; index<word.length();index++){
         std::string newWord = word;
         newWord.erase(newWord.begin()+index);
+        if(newWord.size()<2){
+            continue;
+        }
         combinations.push_back(newWord);
     }
     return combinations;
