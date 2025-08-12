@@ -2,9 +2,9 @@
 
 std::vector<std::string> letterSwap(std::string word){
     std::vector<std::string> combinations;
-    for(int i=1; i<word.length()-1;i++){//skips first letter. Will implement in a seperate part
+    for(int i=0; i<word.length()-1;i++){//skips first letter. Will implement in a seperate part
         std::string newWord = word;
-        wchar_t save = newWord[i];
+        char save = newWord[i];
         newWord[i] = newWord[i+1];
         newWord[i+1] = save;
         combinations.push_back(newWord);
@@ -16,7 +16,7 @@ std::vector<std::string> letterInsert(std::string word){
     std::vector<std::string> combinations;
     //combinations.push_back(word); //word already being checked
     for(int index=1; index<word.length()+1;index++){ //skips first letter. Will implement in a seperate part
-        for (wchar_t letter = L'b'; letter <= L'z'; letter++) {
+        for (char letter = 'a'; letter <= 'z'; letter++) {
             std::string newWord = word;
             newWord.insert(index, 1, letter);
             combinations.push_back(newWord);
@@ -26,7 +26,7 @@ std::vector<std::string> letterInsert(std::string word){
 }
 std::vector<std::string> letterDeletion(std::string word){
     std::vector<std::string> combinations;
-    for(int index=1; index<word.length();index++){
+    for(int index=0; index<word.length();index++){
         std::string newWord = word;
         newWord.erase(newWord.begin()+index);
         combinations.push_back(newWord);

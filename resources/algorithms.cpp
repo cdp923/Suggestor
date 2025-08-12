@@ -70,23 +70,40 @@ int distBFS(char typedLetter, char dictionaryLetter, const std::vector<std::vect
     //printf("Distance out of loop is %i\n", distance[position]);
     return distance[position]; //should always be 0, change later
 }
-std::vector<std::string> reverseInsertionSort(std::vector<std::string> closestResponses, std::vector<int> closestResponsesDist){
-    int largestMinDist = 1000;
-    int tempDist;
-    std::string tempWord;
-    int leftIndex;
-    for(int i = 0; i < closestResponsesDist.size(); i++){
-        tempDist = closestResponsesDist[i];
-        tempWord = closestResponses[i];
-        leftIndex = i-1;
-        while(leftIndex>=0 &&closestResponsesDist[leftIndex]<tempDist){
-            closestResponsesDist[leftIndex+1]=closestResponsesDist[leftIndex];
-            closestResponses[leftIndex+1]=closestResponses[leftIndex];
-            leftIndex--;
+void insertClosestMatch(std::vector<std::string>& closestResponses, std::vector<int>& closestResponsesDist,
+                        const std::string& dictWord,
+                        float current) 
+    {
+    float largestMinDist = closestResponsesDist[closestResponsesDist.size()];
+    if (largestMinDist > current || closestResponses.size() < MAXSUGGESTIONS) {
+        if (closestResponses.size() < MAXSUGGESTIONS) {
+            int insertionPoint = 0;
+            while (insertionPoint < closestResponses.size() && 
+                   closestResponsesDist[insertionPoint] <= current) 
+            {
+                insertionPoint++;
+            }
+            closestResponses.insert(closestResponses.begin() + insertionPoint, dictWord);
+            closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, (int)current);
+
+            if (!closestResponses.empty()) {
+                largestMinDist = (float)closestResponsesDist.back();
+            }
+        } 
+        else if (current < closestResponsesDist[MAXSUGGESTIONS - 1]) {
+            int insertionPoint = 0;
+            while (insertionPoint < MAXSUGGESTIONS && 
+                   closestResponsesDist[insertionPoint] <= current) 
+            {
+                insertionPoint++;
+            }
+            closestResponses.insert(closestResponses.begin() + insertionPoint, dictWord);
+            closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, (int)current);
+
+            closestResponses.pop_back();
+            closestResponsesDist.pop_back();
+
+            largestMinDist = (float)closestResponsesDist[MAXSUGGESTIONS - 1];
         }
-        closestResponsesDist[leftIndex + 1] = tempDist;
-        closestResponses[leftIndex + 1] = tempWord;
     }
-    largestMinDist = closestResponsesDist[0];
-    return closestResponses;
 }

@@ -75,8 +75,9 @@ bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos){
     const char* sql = "SELECT EXISTS(SELECT 1 FROM dictionary WHERE word = ?);";
     for(int index = 0; index<wordCombos.size();index++){    
         std::string word = wordCombos[index];
+        std::cout << "Word: '" << word << "' (from word combos)" << std::endl;
         if(word.size()<2){
-            std::cout << "The word '" << word << "' exists in the database." << std::endl;
+            std::cout << "The word '" << word << "' exists in the database (<2 char)." << std::endl;
             return true;
         }
         int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
@@ -94,8 +95,8 @@ bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos){
                 std::cout << "The word '" << word << "' exists in the database." << std::endl;
                 return true;
             } else {
-                std::cout << "The word '" << word << "' does not exist in the database." << std::endl;
-                return false;
+                //std::cout << "The word '" << word << "' does not exist in the database." << std::endl;
+                continue;
             }
         } else if (rc == SQLITE_DONE) {
             return false;
@@ -107,7 +108,9 @@ bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos){
     sqlite3_finalize(stmt);
     return false;
 }
+/*
 bool wordExists(sqlite3* db, std::string& word){
+    std::cout << "Word: '" << word << "' (from single word)" << std::endl;
     if(word.size()<2){
         std::cout << "The word '" << word << "' exists in the database." << std::endl;
         return true;
@@ -141,6 +144,7 @@ bool wordExists(sqlite3* db, std::string& word){
     sqlite3_finalize(stmt);
     return false;
 }
+*/
 bool dictExists(sqlite3* db){
     sqlite3_stmt* stmt;
     const char* sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='dictionary';";

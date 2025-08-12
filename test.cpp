@@ -19,8 +19,8 @@ int main(){
     std::string seperate;
     while ( getline( iss, seperate, ' ' ) ) {
         std::cout <<  seperate << std::endl;
-        //std::vector<std::string> wordCorrectior = autoSuggest(db, seperate, keyGraph);
-        std::vector<std::string> wordCompleter = autoComplete(db, seperate);
+        std::vector<std::string> wordCorrectior = autoSuggest(db, seperate, keyGraph);
+        //std::vector<std::string> wordCompleter = autoComplete(db, seperate);
     }
     sqlite3_close(db);
 /*

@@ -88,6 +88,7 @@ std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<
     std::vector<int> closestResponsesDist;
     float largestMinDist = 1000;
     combinations.push_back(word);
+    printf("Before og word\n");
     if(wordExists(db, combinations)){
         //printf("in word exists\n");
         return closestResponses;
@@ -96,7 +97,7 @@ std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<
     closestWordSearch(combinations, closestResponses, closestResponsesDist, db, keyGraph, largestMinDist, weight);
     weight++;
 
-    //printf("after closest word search\n");
+    printf("Before swap\n");
     combinations.clear();
     combinations = letterSwap(word);
     if(wordExists(db, combinations)){
@@ -104,7 +105,7 @@ std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<
     }
     closestWordSearch(combinations, closestResponses, closestResponsesDist, db, keyGraph, largestMinDist, weight);
     weight++;
-
+    printf("Before insert\n");
     combinations.clear();
     combinations = letterInsert(word);
     if(wordExists(db, combinations)){
@@ -114,6 +115,7 @@ std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<
     weight++;
 
     combinations.clear();
+    printf("Before delete\n");
     combinations = letterDeletion(word);
     if(wordExists(db, combinations)){
         return closestResponses;
