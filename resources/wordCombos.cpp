@@ -14,14 +14,14 @@ std::vector<std::string> letterSwap(std::string word){
 }
 std::vector<std::string> letterInsert(std::string word){
     std::vector<std::string> combinations;
-    int maxCombinations = 500;
+    //int maxCombinations = 500;
     //combinations.push_back(word); //word already being checked
     for(int index=1; index<word.length()+1;index++){ //skips first letter. Will implement in a seperate part
         for (char letter = 'a'; letter <= 'z'; letter++) {
-            if(combinations.size()>maxCombinations){
-                printf("Returning");
-                return combinations;
-            }
+            //if(combinations.size()>maxCombinations){
+                //printf("Returning");
+                //return combinations;
+            //}
             std::string newWord = word;
             newWord.insert(index, 1, letter);
             combinations.push_back(newWord);

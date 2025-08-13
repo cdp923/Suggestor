@@ -64,7 +64,6 @@ std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<
     std::vector<std::string> combinationSave;
     std::vector<std::string> closestResponses;
     std::vector<int> closestResponsesDist;
-    int maxCombinations = 400;
     float largestMinDist = 1000;
     combinations.push_back(word);
     combinationSave = letterSwap(word);
