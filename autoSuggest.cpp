@@ -31,7 +31,10 @@ void closestWordSearch(std::vector<std::string>& combinations, std::vector<std::
         }
         
         // Get  words from database that start with same letter
-        std::vector<std::string> letterVector = getWordsStartingWith(db, word[0]);
+        std::vector<std::string> letterVector = getWordsStartingWith(db, word[0], word.length());
+        if(letterVector.empty()){
+            return;
+        }
         // Process each candidate word from database
         for (const auto& dictWord : letterVector) {
             if (word.size() != dictWord.size()) {
@@ -50,6 +53,7 @@ void closestWordSearch(std::vector<std::string>& combinations, std::vector<std::
     }
 }
 std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<std::vector<char>> &keyGraph){
+    printf("new word\n");
     int stringIndex =0;
     while (stringIndex<word.size()){
         word[stringIndex] = std::tolower(word[stringIndex]);
@@ -60,10 +64,12 @@ std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<
     std::vector<std::string> combinationSave;
     std::vector<std::string> closestResponses;
     std::vector<int> closestResponsesDist;
+    int maxCombinations = 400;
     float largestMinDist = 1000;
     combinations.push_back(word);
     combinationSave = letterSwap(word);
     combinations.insert(combinations.end(), combinationSave.begin(), combinationSave.end());
+    printf("past swap\n");
     combinationSave.clear();
     combinationSave = letterInsert(word);
     combinations.insert(combinations.end(), combinationSave.begin(), combinationSave.end());
@@ -72,6 +78,7 @@ std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<
     combinationSave = letterDeletion(word);
     combinations.insert(combinations.end(), combinationSave.begin(), combinationSave.end());
     combinationSave.clear();
+    printf("Before word exists\n");
     if(wordExists(db, combinations, combinationSave)){
         //printf("in word exists\n")
         for(int i = 0; i< combinationSave.size(); i++){

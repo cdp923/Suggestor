@@ -164,30 +164,31 @@ bool dictExists(sqlite3* db){
     sqlite3_finalize(stmt);
     return exists;
 } 
-std::vector<std::string> getWordsStartingWith(sqlite3* db, char firstLetter){
+std::vector<std::string> getWordsStartingWith(sqlite3* db, char firstLetter, int length){
     std::vector<std::string> words;
     sqlite3_stmt* stmt;
-    
-    std::string letterStr(1, firstLetter);
-    const char* sql = "SELECT word FROM dictionary WHERE word LIKE ? || '%' ORDER BY frequency DESC, word;";
-    
+   
+    const char* sql = "SELECT word FROM dictionary WHERE word LIKE ? || '%' "
+                     "AND LENGTH(word) = ? "
+                     "ORDER BY frequency DESC, word;";
+   
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to prepare select statement: " << sqlite3_errmsg(db) << std::endl;
         return words;
     }
-    
-    sqlite3_bind_text(stmt, 1, letterStr.c_str(), -1, SQLITE_TRANSIENT);
-    //printf("Words starting with %c", firstLetter," : \n");
-    
+   
+    std::string letterStr(1, firstLetter);
+    sqlite3_bind_text(stmt, 1, letterStr.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 2, length);
+   
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
         const char* word = (const char*)sqlite3_column_text(stmt, 0);
         if (word) {
-            //printf("%s, ", word,"\n");
             words.push_back(std::string(word));
         }
     }
-    
+   
     sqlite3_finalize(stmt);
     return words;
 }
