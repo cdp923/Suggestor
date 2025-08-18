@@ -53,7 +53,7 @@ void closestWordSearch(std::vector<std::string>& combinations, std::vector<std::
     }
 }
 std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<std::vector<char>> &keyGraph){
-    printf("new word\n");
+    //printf("new word\n");
     int stringIndex =0;
     while (stringIndex<word.size()){
         word[stringIndex] = std::tolower(word[stringIndex]);
@@ -68,7 +68,7 @@ std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<
     combinations.push_back(word);
     combinationSave = letterSwap(word);
     combinations.insert(combinations.end(), combinationSave.begin(), combinationSave.end());
-    printf("past swap\n");
+    //printf("past swap\n");
     combinationSave.clear();
     combinationSave = letterInsert(word);
     combinations.insert(combinations.end(), combinationSave.begin(), combinationSave.end());
@@ -77,7 +77,7 @@ std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<
     combinationSave = letterDeletion(word);
     combinations.insert(combinations.end(), combinationSave.begin(), combinationSave.end());
     combinationSave.clear();
-    printf("Before word exists\n");
+    //printf("Before word exists\n");
     if(wordExists(db, combinations, combinationSave)){
         //printf("in word exists\n")
         for(int i = 0; i< combinationSave.size(); i++){

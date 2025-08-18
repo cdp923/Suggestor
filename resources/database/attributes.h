@@ -10,11 +10,15 @@ struct WordData {
     int time;
     std::string source; 
 };
-enum ColumnIndex {
+enum DicColumnIndex {
     WORDTXT = 1,
     FREQUENCY,
     TIME,
     SOURCE
+};
+enum LemmaColumnIndex {
+    LEMMAWORDTXT = 1,
+    PARTOFSPEECH
 };
 extern const std::string tableName; //change createDictTable if you change this
 #endif  

@@ -75,6 +75,11 @@ void insertClosestMatch(std::vector<std::string>& closestResponses, std::vector<
                         int largestMinDist,
                         float current) 
     {
+    for (const auto& item : closestResponses) {
+        if (item == dictWord) {
+            return;
+        }
+    }
     if (largestMinDist > current || closestResponses.size() < MAXSUGGESTIONS) {
         if (closestResponses.size() < MAXSUGGESTIONS) {
             int insertionPoint = 0;
