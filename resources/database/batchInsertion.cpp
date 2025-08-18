@@ -154,3 +154,76 @@ bool batchInsertLemmaWords(sqlite3* db, const std::string& filePath) {
     std::cout << "Successfully inserted " << insertCount << " words total." << std::endl;
     return true;
 }
+bool batchInsertInflectionWords(sqlite3* db, const std::string& filePath) {
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::ofstream file(filePath);
+        std::cerr << "Unable to open file: " << filePath << std::endl;
+        //return false;
+    }
+
+    const char* sql = "INSERT INTO lemma (word, part-of-speech) VALUES (?, ?);";
+    sqlite3_stmt* stmt;
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
+        file.close();
+        return false;
+    }
+
+    rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to begin transaction: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_finalize(stmt);
+        file.close();
+        return false;
+    }
+
+    std::string line;
+    int insertCount = 0;
+    const int BATCH_SIZE = 1000;
+
+    while (std::getline(file, line)) {
+        std::vector<std::string> lineSave;
+        std::stringstream ss(line);
+        std::string info;
+        while(ss>>info){
+            lineSave.push_back(info);
+        }
+        std::string word = lineSave[4]; 
+        std::string partSpeech = lineSave[2]; 
+        if (containSymbols(word)){
+            continue;
+        }
+        sqlite3_bind_text(stmt, LEMMAWORDTXT, word.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, PARTOFSPEECH, partSpeech.c_str(), -1, SQLITE_STATIC);
+
+        rc = sqlite3_step(stmt);
+        if (rc != SQLITE_DONE) {
+            //std::cerr << "Insertion failed for word '" << word << "': " << sqlite3_errmsg(db) << std::endl;
+        }
+
+        sqlite3_reset(stmt);
+        insertCount++;
+
+        // Periodic commit to avoid huge transactions
+        if (insertCount % BATCH_SIZE == 0) {
+            sqlite3_exec(db, "COMMIT; BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
+            //std::cout << "Inserted " << insertCount << " words..." << std::endl;
+        }
+    }
+
+    // Final commit
+    rc = sqlite3_exec(db, "COMMIT;", nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to commit transaction: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_finalize(stmt);
+        file.close();
+        return false;
+    }
+
+    sqlite3_finalize(stmt);
+    file.close();
+    std::cout << "Successfully inserted " << insertCount << " words total." << std::endl;
+    return true;
+}

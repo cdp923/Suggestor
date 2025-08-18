@@ -1,7 +1,7 @@
 #include "fileProcessed.h"
 #include <iostream>
 
-bool createProcessedFilesTable(sqlite3* db) {
+bool createProcessedFileTable(sqlite3* db) {
     const char* table = "CREATE TABLE IF NOT EXISTS processed_files("
                         "filePath TEXT PRIMARY KEY);";
     char* zErrMsg = 0;
