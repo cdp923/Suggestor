@@ -10,12 +10,13 @@ bool createDictTable(sqlite3* db){
     const char* table = "CREATE TABLE IF NOT EXISTS dictionary("
                         "word TEXT PRIMARY KEY NOT NULL,"
                         "frequency INT DEFAULT 1,"
+                        "partOfSpeech TEXT NOT NULL,"
                         "time INT NOT NULL,"
                         "source TEXT NOT NULL);";
     char* zErrMsg = 0;
     int rc = sqlite3_exec(db, table, nullptr, 0, &zErrMsg);
     if (rc != SQLITE_OK) {
-        std::cerr << "SQL error creating table: " << zErrMsg << std::endl;
+        std::cerr << "SQL error creating dictionary table: " << zErrMsg << std::endl;
         sqlite3_free(zErrMsg);
         return false;
     } else {
@@ -26,15 +27,15 @@ bool createDictTable(sqlite3* db){
 bool createLemmaTable(sqlite3* db){
     const char* table = "CREATE TABLE IF NOT EXISTS lemma("
                         "word TEXT PRIMARY KEY NOT NULL,"
-                        "part-of-speech TEXT NOT NULL);";
+                        "partOfSpeech TEXT NOT NULL);";
     char* zErrMsg = 0;
     int rc = sqlite3_exec(db, table, nullptr, 0, &zErrMsg);
     if (rc != SQLITE_OK) {
-        std::cerr << "SQL error creating table: " << zErrMsg << std::endl;
+        std::cerr << "SQL error creating lemma table: " << zErrMsg << std::endl;
         sqlite3_free(zErrMsg);
         return false;
     } else {
-        std::cout << "Inflection table created or already exists." << std::endl;
+        std::cout << "Lemma table created or already exists." << std::endl;
     }
     return true;
 }
@@ -48,7 +49,7 @@ bool createInflectionTable(sqlite3* db){
     char* zErrMsg = 0;
     int rc = sqlite3_exec(db, table, nullptr, 0, &zErrMsg);
     if (rc != SQLITE_OK) {
-        std::cerr << "SQL error creating table: " << zErrMsg << std::endl;
+        std::cerr << "SQL error creating inflection table: " << zErrMsg << std::endl;
         sqlite3_free(zErrMsg);
         return false;
     } else {
@@ -147,14 +148,18 @@ bool initializeDB(sqlite3*& db, const char* dbName, const std::string& filePath)
     }
     */
     if(!checkIfFileIsProcessed(db, filePath)){
+        printf("File not processed\n");
         if (!batchInsertDictWords(db, filePath)) {
             sqlite3_close(db);
             return false;
         }
+        logProcessedFile(db, filePath);
+        /*
         if (!batchInsertLemmaWords(db, filePath)) {
             sqlite3_close(db);
             return false;
         }
+        */
     }
 
     return true;

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 bool batchInsertDictWords(sqlite3* db, const std::string& filePath) {
+    std::cerr << "In batchInsertDictWords " << std::endl;
     std::ifstream file(filePath);
     if (!file.is_open()) {
 
@@ -35,20 +36,32 @@ bool batchInsertDictWords(sqlite3* db, const std::string& filePath) {
     int insertCount = 0;
     const int BATCH_SIZE = 1000;
     const char* source = "dict";
-
+    std::cerr << "Before getline " << std::endl;
+    int lineNum = 0;
     while (std::getline(file, line)) {
+        if(lineNum<28){
+            continue;
+        }
+        lineNum++;
+        std::cerr << "In getline " << std::endl;
         std::vector<std::string> lineSave;
         std::stringstream ss(line);
         std::string info;
+        std::cerr << "before pushing words in line to vector " << std::endl;
         while(ss>>info){
+            printf("%s, \n", info.c_str());
             lineSave.push_back(info);
         }
+        std::cerr << "before assigning partSpeech" << std::endl;
+        std::string partSpeech = lineSave[2]; 
+        std::cerr << "before assigning word" << std::endl;
         std::string word = lineSave[4];
         if (containSymbols(word)){
             continue;
         }
         sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_int(stmt, FREQUENCY, 1);
+        sqlite3_bind_text(stmt, PARTOFSPEECH, partSpeech.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_int(stmt, TIME, currentTime);
         sqlite3_bind_text(stmt, SOURCE, source, -1, SQLITE_STATIC);
 

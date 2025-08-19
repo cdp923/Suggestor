@@ -10,8 +10,18 @@ int main(){
     sqlite3* db;
     std::vector<std::vector<char>> keyGraph = initKeyboard();
     std::string input;
-    if(!initializeDB(db, "data/my_dictionary.db", "data/Dictionary.txt")){
-        return -1;
+
+    std::vector<std::string>WordNetFiles = {
+        "data/princetonDict/data.adj","data/princetonDict/data.adv","data/princetonDict/data.verb",
+        "data/princetonDict/index.adj","data/princetonDict/index.adv","data/princetonDict/index.noun", 
+        "data/princetonDict/index.verb"
+    };
+    for(int fileIndex = 0; fileIndex<WordNetFiles.size(); fileIndex++){
+        std::string filePath = WordNetFiles[fileIndex];
+        if(!initializeDB(db, "data/my_dictionary.db", filePath)){
+            printf("Initilization failed for %s", filePath);
+            return -1;
+        }
     }
     printf("Type: ");
     std::getline(std::cin, input);
@@ -26,7 +36,7 @@ int main(){
 cd ..
 cd ..
 cd projects/corrector
-g++ test.cpp autoSuggest.cpp autocomplete.cpp  resources/keyboard.cpp resources/algorithms.cpp resources/wordCombos.cpp resources/database/methods.cpp resources/database/attributes.cpp -x c resources/database/sqlite/sqlite3.c -o test.exe
+g++ test.cpp autoSuggest.cpp autocomplete.cpp  resources/keyboard.cpp resources/algorithms.cpp resources/wordCombos.cpp resources/database/methods.cpp resources/database/attributes.cpp resources/database/batchInsertion.cpp resources/database/fileProcessed.cpp -x c resources/database/sqlite/sqlite3.c -o test.exe
 test.exe
 */
     return 0;
