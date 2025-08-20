@@ -23,6 +23,7 @@ int main(){
             return -1;
         }
     }
+    //printDB(db);
     printf("Type: ");
     std::getline(std::cin, input);
     std::istringstream iss(input);

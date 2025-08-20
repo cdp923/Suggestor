@@ -170,7 +170,7 @@ bool initializeDB(sqlite3*& db, const char* dbName, const std::string& filePath)
 }
 void printDB(sqlite3*& db){
     sqlite3_stmt* stmt;
-    const char* sql = " SELECT word, frequency, time, source FROM dictionary ORDER BY word;";
+    const char* sql = " SELECT word, frequency, partOfSpeech, time, source FROM dictionary ORDER BY word;";
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Error preparing select statement for viewing: " << sqlite3_errmsg(db) << std::endl;
@@ -186,12 +186,14 @@ void printDB(sqlite3*& db){
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
         const char* word = (const char*)sqlite3_column_text(stmt, WORDTXT-1);
         const char* source = (const char*)sqlite3_column_text(stmt, SOURCE-1);
+        const char* PoS = (const char*)sqlite3_column_text(stmt, PARTOFSPEECH-1);
         
         int frequency = sqlite3_column_int(stmt, FREQUENCY-1);
         sqlite3_int64 time_val = sqlite3_column_int64(stmt, TIME-1);
 
         std::cout << "Word = " << (word ? word : "NULL") << " | ";
         std::cout << "Frequency = " << frequency << " | ";
+        std::cout << "Part of Speech = " << PoS << " | ";
         std::cout << "Time = " << time_val << " | ";
         std::cout << "Source = " << (source ? source : "NULL") << std::endl;
     }

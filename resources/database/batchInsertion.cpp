@@ -5,7 +5,7 @@
 #include <sstream>
 #include <vector>
 bool batchInsertDictWords(sqlite3* db, const std::string& filePath) {
-    std::cerr << "In batchInsertDictWords " << std::endl;
+    //std::cerr << "In batchInsertDictWords " << std::endl;
     std::ifstream file(filePath);
     if (!file.is_open()) {
 
@@ -14,7 +14,7 @@ bool batchInsertDictWords(sqlite3* db, const std::string& filePath) {
         //return false;
     }
 
-    const char* sql = "INSERT INTO dictionary (word, frequency, time, source) VALUES (?, ?, ?, ?);";
+    const char* sql = "INSERT INTO dictionary (word, frequency, partOfSpeech, time, source) VALUES (?, ?, ?, ?, ?);";
     sqlite3_stmt* stmt;
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
@@ -36,25 +36,25 @@ bool batchInsertDictWords(sqlite3* db, const std::string& filePath) {
     int insertCount = 0;
     const int BATCH_SIZE = 1000;
     const char* source = "dict";
-    std::cerr << "Before getline " << std::endl;
+    //std::cerr << "Before getline " << std::endl;
     int lineNum = 0;
     while (std::getline(file, line)) {
         if(lineNum<28){
+            lineNum++;
             continue;
         }
-        lineNum++;
-        std::cerr << "In getline " << std::endl;
+        //std::cerr << "In getline " << std::endl;
         std::vector<std::string> lineSave;
         std::stringstream ss(line);
         std::string info;
-        std::cerr << "before pushing words in line to vector " << std::endl;
+        //std::cerr << "before pushing words in line to vector " << std::endl;
         while(ss>>info){
-            printf("%s, \n", info.c_str());
+            //printf("%s, \n", info.c_str());
             lineSave.push_back(info);
         }
-        std::cerr << "before assigning partSpeech" << std::endl;
+        //std::cerr << "before assigning partSpeech" << std::endl;
         std::string partSpeech = lineSave[2]; 
-        std::cerr << "before assigning word" << std::endl;
+        //std::cerr << "before assigning word" << std::endl;
         std::string word = lineSave[4];
         if (containSymbols(word)){
             continue;
@@ -72,6 +72,7 @@ bool batchInsertDictWords(sqlite3* db, const std::string& filePath) {
 
         sqlite3_reset(stmt);
         insertCount++;
+        lineNum++;
 
         // Periodic commit to avoid huge transactions
         if (insertCount % BATCH_SIZE == 0) {

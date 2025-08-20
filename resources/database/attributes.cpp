@@ -44,7 +44,7 @@ int getWordFrequency(sqlite3* db,const WordData &wordData){
 }
 std::vector<std::string> getWordAttributes(sqlite3* db, const WordData &wordData){
     sqlite3_stmt* stmt ;
-    const char* sql = "SELECT frequency, time, source FROM dictionary WHERE word = ?;";
+    const char* sql = "SELECT frequency,  partOfSpeech, time, source FROM dictionary WHERE word = ?;";
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
     std::vector<std::string> attributes;
     if (rc != SQLITE_OK) {
@@ -60,6 +60,9 @@ std::vector<std::string> getWordAttributes(sqlite3* db, const WordData &wordData
     if (rc == SQLITE_ROW) {
         attributes[WORDTXT-1] = wordData.word;
         attributes[FREQUENCY-1] = sqlite3_column_int(stmt,FREQUENCY);
+
+        attributes[PARTOFSPEECH-1] = '0'; //CHANGE THIS!!!!!
+        
         attributes[TIME-1] = sqlite3_column_int(stmt,TIME);
         attributes[SOURCE-1] = sqlite3_column_int(stmt,SOURCE);
     } else if (rc == SQLITE_DONE) {
