@@ -10,7 +10,7 @@ bool createDictTable(sqlite3* db){
     const char* table = "CREATE TABLE IF NOT EXISTS dictionary("
                         "word TEXT PRIMARY KEY NOT NULL,"
                         "frequency INT DEFAULT 1,"
-                        "partOfSpeech TEXT NOT NULL,"
+                        "partOfSpeech TEXT DEFAULT NULL,"
                         "time INT NOT NULL,"
                         "source TEXT NOT NULL);";
     char* zErrMsg = 0;
@@ -202,4 +202,27 @@ void printDB(sqlite3*& db){
             std::cerr << "Error during select step: " << sqlite3_errmsg(db) << std::endl;
         }
     
+}
+void checkWord(sqlite3*& db){
+    sqlite3_stmt* stmt;
+    const char* sql = " SELECT word FROM dictionary WHERE word =  'theft';";
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error preparing select statement for viewing: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
+    std::cout << "\n--- Contents of 'dictionary' table ---" << std::endl;
+
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    } 
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        const char* word = (const char*)sqlite3_column_text(stmt, WORDTXT-1);
+    }
+        sqlite3_finalize(stmt);
+        if (rc != SQLITE_DONE) {
+            std::cerr << "Error during select step: " << sqlite3_errmsg(db) << std::endl;
+        }
 }

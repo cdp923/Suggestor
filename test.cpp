@@ -14,7 +14,8 @@ int main(){
     std::vector<std::string>WordNetFiles = {
         "data/princetonDict/data.adj","data/princetonDict/data.adv","data/princetonDict/data.verb",
         "data/princetonDict/index.adj","data/princetonDict/index.adv","data/princetonDict/index.noun", 
-        "data/princetonDict/index.verb"
+        "data/princetonDict/index.verb",
+        "data/Dictionary.txt"
     };
     for(int fileIndex = 0; fileIndex<WordNetFiles.size(); fileIndex++){
         std::string filePath = WordNetFiles[fileIndex];
@@ -24,6 +25,7 @@ int main(){
         }
     }
     //printDB(db);
+    checkWord(db);
     printf("Type: ");
     std::getline(std::cin, input);
     std::istringstream iss(input);

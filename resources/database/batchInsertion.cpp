@@ -33,51 +33,78 @@ bool batchInsertDictWords(sqlite3* db, const std::string& filePath) {
 
     time_t currentTime = getCurrentTime();
     std::string line;
+    std::string word;
     int insertCount = 0;
     const int BATCH_SIZE = 1000;
     const char* source = "dict";
     //std::cerr << "Before getline " << std::endl;
     int lineNum = 0;
-    while (std::getline(file, line)) {
-        if(lineNum<28){
+    if(filePath == "data/Dictionary.txt"){
+        while (file >> word) {
+            if (containSymbols(word)){
+                continue;
+            }
+            sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_int(stmt, FREQUENCY, 1);
+            sqlite3_bind_int(stmt, TIME, currentTime);
+            sqlite3_bind_text(stmt, SOURCE, source, -1, SQLITE_STATIC);
+    
+            rc = sqlite3_step(stmt);
+            if (rc != SQLITE_DONE) {
+                //std::cerr << "Insertion failed for word '" << word << "': " << sqlite3_errmsg(db) << std::endl;
+            }
+    
+            sqlite3_reset(stmt);
+            insertCount++;
+    
+            // Periodic commit to avoid huge transactions
+            if (insertCount % BATCH_SIZE == 0) {
+                sqlite3_exec(db, "COMMIT; BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
+                //std::cout << "Inserted " << insertCount << " words..." << std::endl;
+            }
+        }   
+    }else{
+        while (std::getline(file, line)) {
+            if(lineNum<28){
+                lineNum++;
+                continue;
+            }
+            //std::cerr << "In getline " << std::endl;
+            std::vector<std::string> lineSave;
+            std::stringstream ss(line);
+            std::string info;
+            //std::cerr << "before pushing words in line to vector " << std::endl;
+            while(ss>>info){
+                //printf("%s, \n", info.c_str());
+                lineSave.push_back(info);
+            }
+            //std::cerr << "before assigning partSpeech" << std::endl;
+            std::string partSpeech = lineSave[2]; 
+            //std::cerr << "before assigning word" << std::endl;
+            std::string word = lineSave[4];
+            if (containSymbols(word)){
+                continue;
+            }
+            sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_int(stmt, FREQUENCY, 1);
+            sqlite3_bind_text(stmt, PARTOFSPEECH, partSpeech.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_int(stmt, TIME, currentTime);
+            sqlite3_bind_text(stmt, SOURCE, source, -1, SQLITE_STATIC);
+
+            rc = sqlite3_step(stmt);
+            if (rc != SQLITE_DONE) {
+                //std::cerr << "Insertion failed for word '" << word << "': " << sqlite3_errmsg(db) << std::endl;
+            }
+
+            sqlite3_reset(stmt);
+            insertCount++;
             lineNum++;
-            continue;
-        }
-        //std::cerr << "In getline " << std::endl;
-        std::vector<std::string> lineSave;
-        std::stringstream ss(line);
-        std::string info;
-        //std::cerr << "before pushing words in line to vector " << std::endl;
-        while(ss>>info){
-            //printf("%s, \n", info.c_str());
-            lineSave.push_back(info);
-        }
-        //std::cerr << "before assigning partSpeech" << std::endl;
-        std::string partSpeech = lineSave[2]; 
-        //std::cerr << "before assigning word" << std::endl;
-        std::string word = lineSave[4];
-        if (containSymbols(word)){
-            continue;
-        }
-        sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_int(stmt, FREQUENCY, 1);
-        sqlite3_bind_text(stmt, PARTOFSPEECH, partSpeech.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_int(stmt, TIME, currentTime);
-        sqlite3_bind_text(stmt, SOURCE, source, -1, SQLITE_STATIC);
 
-        rc = sqlite3_step(stmt);
-        if (rc != SQLITE_DONE) {
-            //std::cerr << "Insertion failed for word '" << word << "': " << sqlite3_errmsg(db) << std::endl;
-        }
-
-        sqlite3_reset(stmt);
-        insertCount++;
-        lineNum++;
-
-        // Periodic commit to avoid huge transactions
-        if (insertCount % BATCH_SIZE == 0) {
-            sqlite3_exec(db, "COMMIT; BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
-            //std::cout << "Inserted " << insertCount << " words..." << std::endl;
+            // Periodic commit to avoid huge transactions
+            if (insertCount % BATCH_SIZE == 0) {
+                sqlite3_exec(db, "COMMIT; BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
+                //std::cout << "Inserted " << insertCount << " words..." << std::endl;
+            }
         }
     }
 
