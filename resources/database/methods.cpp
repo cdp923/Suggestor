@@ -20,7 +20,7 @@ bool createDictTable(sqlite3* db){
         sqlite3_free(zErrMsg);
         return false;
     } else {
-        std::cout << "Table dictionary created or already exists." << std::endl;
+        //std::cout << "Table dictionary created or already exists." << std::endl;
     }
     return true;
 }
@@ -35,7 +35,7 @@ bool createLemmaTable(sqlite3* db){
         sqlite3_free(zErrMsg);
         return false;
     } else {
-        std::cout << "Lemma table created or already exists." << std::endl;
+        //std::cout << "Lemma table created or already exists." << std::endl;
     }
     return true;
 }
@@ -53,7 +53,22 @@ bool createInflectionTable(sqlite3* db){
         sqlite3_free(zErrMsg);
         return false;
     } else {
-        std::cout << "Inflection table created or already exists." << std::endl;
+        //std::cout << "Inflection table created or already exists." << std::endl;
+    }
+    return true;
+}
+bool createTables(sqlite3* db){
+    if (!createProcessedFileTable(db)) {
+        sqlite3_close(db);
+        return false;
+    }
+    if (!createDictTable(db)) {
+        sqlite3_close(db);
+        return false;
+    }
+    if (!createLemmaTable(db)) {
+        sqlite3_close(db);
+        return false;
     }
     return true;
 }
@@ -129,18 +144,7 @@ bool initializeDB(sqlite3*& db, const char* dbName, const std::string& filePath)
         std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
         return false;
     }
-    if (!createProcessedFileTable(db)) {
-        sqlite3_close(db);
-        return false;
-    }
-    if (!createDictTable(db)) {
-        sqlite3_close(db);
-        return false;
-    }
-    if (!createLemmaTable(db)) {
-        sqlite3_close(db);
-        return false;
-    }
+    createTables(db);
     /*
     if (!createInflectionTable(db)) {
         sqlite3_close(db);

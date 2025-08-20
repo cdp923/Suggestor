@@ -28,6 +28,9 @@ int main(){
     std::istringstream iss(input);
     std::string seperate;
     while ( getline( iss, seperate, ' ' ) ) {
+        if (containSymbols(seperate)){
+            continue;
+        }
         std::vector<std::string> wordCorrectior = autoSuggest(db, seperate, keyGraph);
         //std::vector<std::string> wordCompleter = autoComplete(db, seperate);
     }
