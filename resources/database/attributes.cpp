@@ -223,3 +223,17 @@ std::vector<std::string> getSubset(sqlite3* db, std::string prefix){
     sqlite3_finalize(stmt);
     return words;
 }
+int noPoSNum(sqlite3* db){
+    sqlite3_stmt* stmt;
+    const char* sql = "SELECT word FROM dictionary WHERE partOfSpeech IS NULL";
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to prepare noPoSNum select statement: " << sqlite3_errmsg(db) << std::endl;
+        return -1;
+    }
+    int count = 0;
+    while(sqlite3_step(stmt)==SQLITE_ROW){
+        count++;
+    }
+    return count;
+}

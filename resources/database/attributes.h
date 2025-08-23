@@ -30,6 +30,8 @@ std::vector<std::string> getWordAttributes(sqlite3* db, const WordData &wordData
 bool wordExists(sqlite3* db, std::vector<std::string>& wordCombos, std::vector<std::string>& comboSave);//word combos
 //bool wordExists(sqlite3* db, std::string& word); //single word
 bool dictExists(sqlite3* db);
+int noPoSNum(sqlite3* db);
 std::vector<std::string> getWordsStartingWith(sqlite3* db, char firstLetter, int length);
 std::vector<std::string> getSubset(sqlite3* db, std::string prefix);
+int noPoSNum(sqlite3* db);
 

@@ -12,10 +12,9 @@ int main(){
     std::string input;
 
     std::vector<std::string>WordNetFiles = {
-        "data/princetonDict/data.adj","data/princetonDict/data.adv","data/princetonDict/data.verb",
-        "data/princetonDict/index.adj","data/princetonDict/index.adv","data/princetonDict/index.noun", 
-        "data/princetonDict/index.verb",
-        "data/Dictionary.txt"
+        "data/princetonDict/data.adj", "data/princetonDict/data.adv", "data/princetonDict/data.verb",
+        "data/princetonDict/data.noun", "data/PoS/prepositions.txt", "data/PoS/pronouns.txt", "data/PoS/interjections.txt", 
+        "data/PoS/conjunctions.txt","data/Dictionary.txt", "data/drugs.txt","data/explicit.txt"
     };
     for(int fileIndex = 0; fileIndex<WordNetFiles.size(); fileIndex++){
         std::string filePath = WordNetFiles[fileIndex];
@@ -24,6 +23,8 @@ int main(){
             return -1;
         }
     }
+    int noPoSCount = noPoSNum(db);
+    std::cerr << "Words without a part of speech: "<< noPoSCount << std::endl;
     //printDB(db);
     checkWord(db);
     printf("Type: ");

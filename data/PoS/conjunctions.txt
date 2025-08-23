@@ -1,0 +1,25 @@
+key: c
+for
+and
+nor
+but
+or
+yet
+so
+after
+although
+as
+because
+before
+if
+once
+since
+than
+that
+though
+unless
+until
+when
+where
+while
+whether
