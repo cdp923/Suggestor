@@ -57,28 +57,36 @@ int batchPrinceDictInsertHelper(sqlite3* db, sqlite3_stmt* stmt, std::ifstream& 
             //printf("%s, \n", info.c_str());
             lineSave.push_back(info);
         }
-        //std::cerr << "before assigning partSpeech" << std::endl;
         std::string partSpeech = lineSave[2]; 
         //std::cerr << "before assigning word" << std::endl;
-        std::string word = lineSave[4];
-        if (containSymbols(word)){
-            continue;
+        std::string wordSpace = lineSave[4];
+        std::vector<std::string> wordSave;
+        std::string segment;
+        std::stringstream wordSpliter(wordSpace);
+        while(std::getline(wordSpliter, segment, '_'))
+        {
+           wordSave.push_back(segment);
         }
-        sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_int(stmt, FREQUENCY, 1);
-        sqlite3_bind_text(stmt, PARTOFSPEECH, partSpeech.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_int(stmt, TIME, currentTime);
-        sqlite3_bind_text(stmt, SOURCE, "dict", -1, SQLITE_STATIC);
+        for(int i = 0; i<wordSave.size(); i++){
+            std::string word = wordSave[i];
+            if (containSymbols(word)){
+                continue;
+            }
+            sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_int(stmt, FREQUENCY, 1);
+            sqlite3_bind_text(stmt, PARTOFSPEECH, partSpeech.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_int(stmt, TIME, currentTime);
+            sqlite3_bind_text(stmt, SOURCE, "dict", -1, SQLITE_STATIC);
 
-        rc = sqlite3_step(stmt);
-        if (rc != SQLITE_DONE) {
-            //std::cerr << "Insertion failed for word '" << word << "': " << sqlite3_errmsg(db) << std::endl;
+            rc = sqlite3_step(stmt);
+            if (rc != SQLITE_DONE) {
+                //std::cerr << "Insertion failed for word '" << word << "': " << sqlite3_errmsg(db) << std::endl;
+            }
+
+            sqlite3_reset(stmt);
+            insertCount++;
+            lineNum++;
         }
-
-        sqlite3_reset(stmt);
-        insertCount++;
-        lineNum++;
-
         // Periodic commit to avoid huge transactions
         if (insertCount % BATCH_SIZE == 0) {
             sqlite3_exec(db, "COMMIT; BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
