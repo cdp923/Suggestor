@@ -11,17 +11,9 @@ int main(){
     std::vector<std::vector<char>> keyGraph = initKeyboard();
     std::string input;
 
-    std::vector<std::string>WordNetFiles = {
-        "data/princetonDict/data.adj", "data/princetonDict/data.adv", "data/princetonDict/data.verb",
-        "data/princetonDict/data.noun", "data/PoS/prepositions.txt", "data/PoS/pronouns.txt", "data/PoS/interjections.txt", 
-        "data/PoS/conjunctions.txt","data/Dictionary.txt", "data/drugs.txt","data/explicit.txt"
-    };
-    for(int fileIndex = 0; fileIndex<WordNetFiles.size(); fileIndex++){
-        std::string filePath = WordNetFiles[fileIndex];
-        if(!initializeDB(db, "data/my_dictionary.db", filePath)){
-            printf("Initilization failed for %s", filePath);
-            return -1;
-        }
+    if(!initializeDB(db, "data/my_dictionary.db")){
+        printf("Database initilization failed");
+        return -1;
     }
     int noPoSCount = noPoSNum(db);
     std::cerr << "Words without a part of speech: "<< noPoSCount << std::endl;
@@ -45,6 +37,7 @@ cd ..
 cd projects/corrector
 g++ test.cpp autoSuggest.cpp autocomplete.cpp  resources/keyboard.cpp resources/algorithms.cpp resources/wordCombos.cpp resources/database/methods.cpp resources/database/attributes.cpp resources/database/batchInsertion.cpp resources/database/fileProcessed.cpp -x c resources/database/sqlite/sqlite3.c -o test.exe
 test.exe
+thsi is a teft of the sysetn
 */
     return 0;
 }

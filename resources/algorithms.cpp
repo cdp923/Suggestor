@@ -12,7 +12,7 @@ int indexOfChar(char input){
     return input-97;
 }
 
-int distBFS(char typedLetter, char dictionaryLetter, const std::vector<std::vector<char>>& keyGraph){
+float distBFS(char typedLetter, char dictionaryLetter, const std::vector<std::vector<char>>& keyGraph){
     //printf("In BFS search\n");
     if (typedLetter == '\0' || dictionaryLetter == '\0') { //remove this and add correct logic
         printf("Error: Invalid input characters\n");
@@ -22,7 +22,7 @@ int distBFS(char typedLetter, char dictionaryLetter, const std::vector<std::vect
         return 0;
     }
     std::vector<int> visited(keyGraph.size(), -1);
-    std::vector<int> distance(keyGraph.size(), -1);
+    std::vector<float> distance(keyGraph.size(), -1);
     std::queue<char> queue;
     char save;
     std::vector<char> stringVector;
@@ -51,7 +51,7 @@ int distBFS(char typedLetter, char dictionaryLetter, const std::vector<std::vect
             }
             if (visited[currentConnection] == -1){
                 visited[currentConnection]=0;
-                distance[currentConnection] = distance[current]+1; //possibly break if distance[currentConnection] >2
+                distance[currentConnection] = distance[current]+.25; //possibly break if distance[currentConnection] >2
                 //if(distance[currentConnection]>2){
                 //    printf("BFS continue\n");
                 //    continue;
@@ -70,12 +70,10 @@ int distBFS(char typedLetter, char dictionaryLetter, const std::vector<std::vect
     //printf("Distance out of loop is %i\n", distance[position]);
     return distance[position]; //should always be 0, change later
 }
-void insertClosestMatch(std::vector<std::string>& closestResponses, std::vector<int>& closestResponsesDist,
-                        const std::string& dictWord,
-                        int largestMinDist,
-                        float current) 
+void insertClosestMatch(std::vector<std::string>& closestResponses, std::vector<float>& closestResponsesDist,
+                        const std::string& dictWord, float largestMinDist, float current) 
     {
-    for (const auto& item : closestResponses) {
+    for (const std::string& item : closestResponses) {
         if (item == dictWord) {
             return;
         }
@@ -90,7 +88,7 @@ void insertClosestMatch(std::vector<std::string>& closestResponses, std::vector<
             closestResponses.insert(closestResponses.begin() + insertionPoint, dictWord);
             closestResponsesDist.insert(closestResponsesDist.begin() + insertionPoint, (int)current);
             
-            if (closestResponses.size() > 0) {
+            if (closestResponses.size() > 0) { //was creating error, might be able to remove now
                 largestMinDist = (float)closestResponsesDist[closestResponses.size() - 1];
             }
         } else if (current < closestResponsesDist[MAXSUGGESTIONS - 1]) {

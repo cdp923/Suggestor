@@ -18,7 +18,6 @@ int batchDictInsertHelper(sqlite3* db, sqlite3_stmt* stmt, std::ifstream& file, 
             continue;
         }
         sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_int(stmt, FREQUENCY, 1);
         sqlite3_bind_int(stmt, TIME, currentTime);
         sqlite3_bind_text(stmt, SOURCE, "dict", -1, SQLITE_STATIC);
 
@@ -73,7 +72,6 @@ int batchPrinceDictInsertHelper(sqlite3* db, sqlite3_stmt* stmt, std::ifstream& 
                 continue;
             }
             sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
-            sqlite3_bind_int(stmt, FREQUENCY, 1);
             sqlite3_bind_text(stmt, PARTOFSPEECH, partSpeech.c_str(), -1, SQLITE_STATIC);
             sqlite3_bind_int(stmt, TIME, currentTime);
             sqlite3_bind_text(stmt, SOURCE, "dict", -1, SQLITE_STATIC);
@@ -124,7 +122,6 @@ int batchPoSDictInsertHelper(sqlite3* db, sqlite3_stmt* stmt, std::ifstream& fil
             continue;
         }
         sqlite3_bind_text(stmt, WORDTXT, word.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_int(stmt, FREQUENCY, 1);
         sqlite3_bind_text(stmt, PARTOFSPEECH, partSpeech.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_int(stmt, TIME, currentTime);
         sqlite3_bind_text(stmt, SOURCE, "dict", -1, SQLITE_STATIC);
@@ -156,7 +153,7 @@ bool batchInsertDictWords(sqlite3* db, const std::string& filePath) {
         //return false;
     }
 
-    const char* sql = "INSERT INTO dictionary (word, frequency, partOfSpeech, time, source) VALUES (?, ?, ?, ?, ?);";
+    const char* sql = "INSERT INTO dictionary (word, partOfSpeech, time, source) VALUES (?, ?, ?, ?);";
     sqlite3_stmt* stmt;
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
