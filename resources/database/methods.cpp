@@ -9,7 +9,7 @@
 bool createDictTable(sqlite3* db){
     const char* table = "CREATE TABLE IF NOT EXISTS dictionary("
                         "word TEXT PRIMARY KEY NOT NULL,"
-                        "frequency REAL DEFAULT 0.000000003,"
+                        "frequency DOUBLE DEFAULT 0.000000003,"
                         "partOfSpeech TEXT DEFAULT NULL,"
                         "time INT NOT NULL,"
                         "source TEXT NOT NULL);";
@@ -127,102 +127,6 @@ bool bulkUpdateWordfreqData(sqlite3* db, const std::string& filePath) {
     std::cout << "Attempted to update " << count << " words from wordfreq_data.csv." << std::endl;
     return true;
 }
-/*
-bool bulkUpdateWordfreqData(sqlite3* db, const std::string& filePath) {
-    std::ifstream file(filePath);
-    if (!file.is_open()) {
-        std::cerr << "Error: Could not open wordfreq data file at " << filePath << std::endl;
-        return false;
-    }
-    
-    std::string line;
-    // Read and ignore the header row
-    std::getline(file, line);
-    std::cout << "Header line: " << line << std::endl;
-    
-    sqlite3_stmt* stmt;
-    const char* sql = "UPDATE dictionary SET frequency = ? WHERE word = ?;";
-    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
-    if (rc != SQLITE_OK) {
-        std::cerr << "Failed to prepare update statement: " << sqlite3_errmsg(db) << std::endl;
-        return false;
-    }
-    
-    sqlite3_exec(db, "BEGIN TRANSACTION;", 0, 0, 0);
-    int count = 0;
-    int updated = 0;
-    
-    while (std::getline(file, line)) {
-        std::stringstream ss(line);
-        std::string word_str, freq_str;
-        
-        if (std::getline(ss, word_str, ',') && std::getline(ss, freq_str, ',')) {
-            // Debug: Print the raw values
-            if (count < 5) {  // Only print first 5 for debugging
-                std::cout << "Raw line: '" << line << "'" << std::endl;
-                std::cout << "Word: '" << word_str << "', Freq string: '" << freq_str << "'" << std::endl;
-            }
-            
-            try {
-                double frequency = std::stod(freq_str);
-                
-                if (count < 5) {  // Only print first 5 for debugging
-                    std::cout << "Converted frequency: " << std::scientific << frequency << std::endl;
-                }
-                
-                sqlite3_reset(stmt);
-                sqlite3_clear_bindings(stmt);
-                sqlite3_bind_double(stmt, 1, frequency);  // First ? is frequency
-                sqlite3_bind_text(stmt, 2, word_str.c_str(), -1, SQLITE_TRANSIENT);  // Second ? is word
-                
-                rc = sqlite3_step(stmt);
-                if (rc == SQLITE_DONE) {
-                    // Check if any rows were actually updated
-                    int changes = sqlite3_changes(db);
-                    if (changes > 0) {
-                        updated++;
-                        if (count < 5) {
-                            std::cout << "Successfully updated word: " << word_str << std::endl;
-                        }
-                    } else {
-                        if (count < 5) {
-                            std::cout << "Word '" << word_str << "' not found in database (no update)" << std::endl;
-                        }
-                    }
-                } else {
-                    std::cerr << "Update failed for word '" << word_str << "': " << sqlite3_errmsg(db) << std::endl;
-                }
-                count++;
-            } catch (const std::exception& e) {
-                std::cerr << "Error converting frequency '" << freq_str << "' for word '" << word_str << "': " << e.what() << std::endl;
-            }
-        } else {
-            std::cerr << "Failed to parse line: " << line << std::endl;
-        }
-    }
-    
-    sqlite3_finalize(stmt);
-    sqlite3_exec(db, "COMMIT;", 0, 0, 0);
-    
-    std::cout << "Processed " << count << " words from CSV." << std::endl;
-    std::cout << "Successfully updated " << updated << " words in database." << std::endl;
-    
-    // Test query to verify some updates worked
-    const char* test_sql = "SELECT word, frequency FROM dictionary WHERE frequency > 0 AND frequency < 1e-07 LIMIT 3;";
-    sqlite3_stmt* test_stmt;
-    if (sqlite3_prepare_v2(db, test_sql, -1, &test_stmt, 0) == SQLITE_OK) {
-        std::cout << "Sample of updated records:" << std::endl;
-        while (sqlite3_step(test_stmt) == SQLITE_ROW) {
-            const char* word = (const char*)sqlite3_column_text(test_stmt, 0);
-            double freq = sqlite3_column_double(test_stmt, 1);
-            std::cout << "  " << word << ": " << std::scientific << freq << std::endl;
-        }
-        sqlite3_finalize(test_stmt);
-    }
-    
-    return true;
-}
-    */
 bool dbInsert(sqlite3* db, const WordData &wordData){
     sqlite3_stmt* stmt;
     const char* sql = "INSERT INTO dictionary (word, frequency, time, source) VALUES (?, ?, ?, ?);";
@@ -242,38 +146,6 @@ bool dbInsert(sqlite3* db, const WordData &wordData){
     }
 
     sqlite3_finalize(stmt);
-    return true;
-}
-
-bool initializeDB(sqlite3*& db, const char* dbName, const std::string& filePath){
-    int rc = sqlite3_open(dbName, &db);
-
-    if (rc != SQLITE_OK) {
-        std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
-        return false;
-    }
-    createTables(db);
-    /*
-    if (!createInflectionTable(db)) {
-        sqlite3_close(db);
-        return false;
-    }
-    */
-    if(!checkIfFileIsProcessed(db, filePath)){
-        printf("File not processed\n");
-        if (!batchInsertDictWords(db, filePath)) {
-            sqlite3_close(db);
-            return false;
-        }
-        logProcessedFile(db, filePath);
-        /*
-        if (!batchInsertLemmaWords(db, filePath)) {
-            sqlite3_close(db);
-            return false;
-        }
-        */
-    }
-
     return true;
 }
 bool initializeDB(sqlite3*& db, const char* dbName){

@@ -38,8 +38,9 @@ void closestWordSearch(std::string& word, std::vector<std::string>& closestRespo
         return;
     }
     float frequency =0.2;
-    // Get  words from database that start with same letter
+    // Get words of the same length from database that start with same letter
     std::vector<std::string> letterVector = getWordsStartingWith(db, word[0], word.length());
+    //std::vector<std::string> letterVector = getSubset(db, word[0]);
     if(letterVector.empty()){
         return;
     }
