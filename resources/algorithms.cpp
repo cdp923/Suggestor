@@ -11,6 +11,21 @@ int indexOfFirstChar(std::string input){
 int indexOfChar(char input){
     return input-97;
 }
+std::vector<bool> lowerCase(std::string& word){
+    std::vector<bool> caseSave;
+    int stringIndex =0;
+    while (stringIndex<word.size()){
+        char charSave = word[stringIndex];
+        word[stringIndex] = std::tolower(word[stringIndex]);
+        if(charSave != word[stringIndex]){
+            caseSave.push_back(false);
+        } else{
+            caseSave.push_back(true);
+        }
+        stringIndex++;
+    }
+    return caseSave;
+}
 
 float distBFS(char typedLetter, char dictionaryLetter, const std::vector<std::vector<char>>& keyGraph){
     //printf("In BFS search\n");

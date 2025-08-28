@@ -1,6 +1,5 @@
 #include "autoSuggest.h"
 #include "resources/algorithms.h"
-#include "resources/wordCombos.h"
 #include "resources/database/attributes.h"
 
 #include <algorithm>
@@ -92,26 +91,25 @@ void closestWordSearch(std::string& word, std::vector<std::string>& closestRespo
     }
 }
 std::vector<std::string> autoSuggest(sqlite3* db, std::string word, std::vector<std::vector<char>> &keyGraph){
-    //printf("new word\n");
+    if(word == "" || containSymbols(word)){
+        return std::vector<std::string>();
+    }
+
+    std::vector<std::string> closestResponses;
+    std::vector<float> closestResponsesDist;
+    float largestMinDist = 1000;
+    float weight = 0;
+
+    std::vector<bool> casePosition = lowerCase(word); 
     int stringIndex =0;
     while (stringIndex<word.size()){
         word[stringIndex] = std::tolower(word[stringIndex]);
         stringIndex++;
     }
-    float weight = 0;
-    std::vector<std::string> closestResponses;
-    std::vector<float> closestResponsesDist;
-    float largestMinDist = 1000;
-    //printf("Before word exists\n");
-    if(word == "" || containSymbols(word)){
-        return closestResponses;
-    }
     if(wordExists(db, word)){
         insertClosestMatch(closestResponses, closestResponsesDist, word, largestMinDist, weight);
     }
-    //printf("after word exists, before closest word search\n");
     closestWordSearch(word, closestResponses, closestResponsesDist, db, keyGraph, largestMinDist, weight);
-    //printf("Word: %ls\n", word.c_str());
     printf("Best Responses (%s): ", word.c_str());
     for(int i=0;i<closestResponses.size();i++){
         printf("%s ",closestResponses[i].c_str());

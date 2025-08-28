@@ -15,10 +15,7 @@ int main(){
         printf("Database initilization failed");
         return -1;
     }
-    int noPoSCount = noPoSNum(db);
-    std::cerr << "Words without a part of speech: "<< noPoSCount << std::endl;
     //printDB(db);
-    checkWord(db);
     printf("Type: ");
     std::getline(std::cin, input);
     std::istringstream iss(input);
@@ -35,7 +32,7 @@ int main(){
 cd ..
 cd ..
 cd projects/corrector
-g++ test.cpp autoSuggest.cpp autocomplete.cpp  resources/keyboard.cpp resources/algorithms.cpp resources/wordCombos.cpp resources/database/methods.cpp resources/database/attributes.cpp resources/database/batchInsertion.cpp resources/database/fileProcessed.cpp -x c resources/database/sqlite/sqlite3.c -o test.exe
+g++ test.cpp autoSuggest.cpp autocomplete.cpp  resources/keyboard.cpp resources/algorithms.cpp resources/database/methods.cpp resources/database/attributes.cpp resources/database/batchInsertion.cpp resources/database/fileProcessed.cpp -x c resources/database/sqlite/sqlite3.c -o test.exe
 test.exe
 thsi is a teft of the sysetn
 */

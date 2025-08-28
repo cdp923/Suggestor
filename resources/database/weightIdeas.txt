@@ -1,5 +1,0 @@
-Ideas for weights:
-
-Part of speech:
-    pronouns should be weighted high because they are used often
-    complex prepositions seems like to much of a hassle to include
